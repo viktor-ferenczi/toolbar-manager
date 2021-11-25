@@ -1,0 +1,6 @@
+.idea
+GameBin64
+ToolbarManager.sln.DotSettings.user
+/packages
+**/bin
+**/obj
