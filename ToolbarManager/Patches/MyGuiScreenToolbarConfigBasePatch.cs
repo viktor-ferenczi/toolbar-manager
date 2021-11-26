@@ -32,7 +32,8 @@ namespace ToolbarManager.Patches
                 Text = "Save",
                 Name = "SaveToolbarButton",
                 VisualStyle = MyGuiControlButtonStyleEnum.Tiny,
-                Position = new Vector2(-0.425f, 0.425f)
+                Position = new Vector2(-0.425f, 0.425f),
+                Size = new Vector2(0.2f, 0.1f)
             };
             button.ButtonClicked += _ => OnSaveCharacterToolbar?.Invoke();
             __instance.Elements.Add(button);

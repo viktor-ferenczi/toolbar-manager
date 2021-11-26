@@ -2,31 +2,49 @@
 
 Toolbar Manager for the Space Engineers game.
 
-- Save the toolbar of your character into a file
-- Load or merge your character's toolbar from a saved one
-- Save the toolbars of a block (cockpit, timer) into a file
-- Load or merge a block toolbar from saved one
-- Move or swap toolbar items without having to recreate them
-- Swap numbered toolbar "pages" for quick rearrangement
+## Features
 
-This plugin allows using a "standardized" toolbar, which greatly helps 
-speeding up your builds.
+This plugin allows for saving and loading toolbars. For example you can 
+quickly load a "standard" toolbar into any game, which can greatly speed
+up your builds by using toolbar slots you have already memorized.
 
-It also allows loading ship cockpits quickly after building them. Just
-name your groups and blocks the same way and the loaded cockpit toolbar
-will work out of the box.
+This plugin works for both offline and online multiplayer games without
+the need for any server side support. All your save files are local, 
+nothing is stored on a server.
 
-Try to reference blocks with their group names if possible. On loading
-a block toolbar individual blocks can be referenced by name, but that 
-would result in undefined behavior if the block name is not unique on 
-the grid.
+### Character toolbars
 
-## Install the client plugin
-1. Subscribe to this mod
+New **Save** and **Load** buttons in the bottom left corner of the **G menu**. 
+
+- Save
+- Load
+- Merge
+- Rename
+- Delete
+
+_Merge is the same as load, but does not clear slots not used by the toolbar loaded._
+
+Saved toolbars are stored in XML files: `%AppData%\Roaming\SpaceEngineers\ToolbarManager`
+
+### Planned features
+
+These features are in the making:
+
+- Support for block toolbars (cockpit, remote control, timer, sensor)
+- Restricting the load/merge operations to certain toolbar pages
+- Moving and swapping toolbar items using mouse drag&drop
+- Moving toolbar items between toolbar pages
+- Swapping toolbar pages
+
+Please join the Discord (see below) and tell me which one you would use, 
+so they can be fast-tracked.  
+
+## Installation
+1. Exit from Space Engineers
 2. Install the [Plugin Loader](https://steamcommunity.com/sharedfiles/filedetails/?id=2407984968)
-3. Start the game
+3. Start Space Engineers
 4. Open the Plugins menu (should be in the Main Menu)
-5. Enable the Toolbar Manager plugin (GitHub source)
+5. Enable the Toolbar Manager plugin
 6. Save and let the game restart
 
 After enabling the plugin it will be active for all single- and multiplayer worlds.
@@ -42,7 +60,8 @@ After enabling the plugin it will be active for all single- and multiplayer worl
 - [Bug reports](https://discord.gg/x3Z8Ug5YkQ)
 
 Please support me on Patreon if you would like to receive regular updates 
-to this client plugin as new game versions are released.
+and improvements to this client plugin and to get the plugin updated as 
+new (potentially incompatible) game versions are released.
 
 Thank you and enjoy!
 
@@ -70,22 +89,14 @@ Thank you and enjoy!
 - Lotan
 
 #### Testers
-- Robot10 - Test Lead
-- Radar5k
-- LTP
-- Mike Dude
-- CMDR DarkSeraphim88
-- ced
-- Precorus
-- opesoorry
-- Spitfyre.pjs
-- Random000
-- gamemasterellison
+- Avaness
+- ...
 
 ### Creators
 - avaness - Plugin Loader, Racing Display
-- SwiftyTech - Stargate Dimensions
+- Mordith - Guardians SE
 - Mike Dude - Guardians SE
+- SwiftyTech - Stargate Dimensions
 - Fred XVI - Racing maps
 - Kamikaze - M&M mod
 - LTP
