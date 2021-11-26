@@ -132,6 +132,8 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Extensions\MyGuiSandboxExtensions.cs" />
+        <Compile Include="Gui\NameDialog.cs" />
         <Compile Include="Logic\Toolbar.cs" />
         <Compile Include="Logic\Storage.cs" />
         <Compile Include="Logic\Slot.cs" />

@@ -58,19 +58,21 @@ namespace ToolbarManager.Logic
 
         public void Write(StreamWriter stream)
         {
-            var ob = new MyObjectBuilder_Toolbar();
-            ob.ToolbarType = MyToolbarType.Character;
+            var builder = new MyObjectBuilder_Toolbar
+            {
+                ToolbarType = MyToolbarType.Character
+            };
+
             for (var index = 0; index < slots.Count; index++)
             {
-                var slot = new MyObjectBuilder_Toolbar.Slot
+                builder.Slots.Add(new MyObjectBuilder_Toolbar.Slot
                 {
                     Index = index,
                     Data = slots[index].Builder
-                };
-                ob.Slots.Add(slot);
+                });
             }
 
-            MyObjectBuilderSerializer.SerializeXML(stream.BaseStream, ob);
+            MyObjectBuilderSerializer.SerializeXML(stream.BaseStream, builder);
         }
 
         public void Set(MyToolbar toolbar)

@@ -2,6 +2,9 @@ using System;
 using System.IO;
 using Sandbox.Game.Entities.Character;
 using Sandbox.Game.World;
+using Sandbox.Graphics.GUI;
+using ToolbarManager.Extensions;
+using ToolbarManager.Gui;
 using ToolbarManager.Patches;
 using VRage.FileSystem;
 using VRage.Utils;
@@ -13,8 +16,7 @@ namespace ToolbarManager.Logic
         // MyFileSystem.UserDataPath ~= C:\Users\%USERNAME%\AppData\Roaming\SpaceEngineers
         private static string UserDataDir => Path.Combine(MyFileSystem.UserDataPath, "ToolbarManager");
         private static string CharacterDir => Path.Combine(UserDataDir, "Character");
-        private static string ControllerDir => Path.Combine(UserDataDir, "Controller");
-        private static string TimerDir => Path.Combine(UserDataDir, "Timer");
+        private static string BlockDir => Path.Combine(UserDataDir, "Block");
 
         private static MyCharacter Character => MySession.Static.LocalCharacter;
         private static bool Valid => Character?.Toolbar != null;
@@ -32,11 +34,27 @@ namespace ToolbarManager.Logic
             if (!Valid)
                 return;
 
+            MyGuiSandbox.AddScreen(new NameDialog(OnNameSpecified, "Name your toolbar", "current", maxLenght: 50));
+        }
+
+        private void OnNameSpecified(string name)
+        {
+            var toolbar = new Toolbar(Character.Toolbar);
+
             Directory.CreateDirectory(CharacterDir);
 
-            var path = Path.Combine(CharacterDir, "toolbar.xml");
-            var toolbar = new Toolbar(Character.Toolbar);
-            toolbar.Write(path);
+            name = name.Replace('?', '.').Replace('*', '-').Replace('\\', '_').Replace('/', '-');
+            var path = Path.Combine(CharacterDir, $"{name}.xml");
+
+            try
+            {
+                toolbar.Write(path);
+            }
+            catch(Exception e)
+            {
+                MyLog.Default.Error("ToolbarManager: Failed to save character toolbar \"{name}\" to file \"{path}\"");
+                MyGuiSandboxExtensions.Show( "Failed to save character toolbar", "Error");
+            }
         }
 
         private void OnLoadCharacterToolbar()
