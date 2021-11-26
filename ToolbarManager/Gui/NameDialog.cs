@@ -6,6 +6,7 @@ using Sandbox.Graphics.GUI;
 using VRage;
 using VRage.Utils;
 using VRageMath;
+#pragma warning disable 618
 
 namespace ToolbarManager.Gui
 {
