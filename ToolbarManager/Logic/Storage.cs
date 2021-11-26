@@ -13,6 +13,8 @@ namespace ToolbarManager.Logic
 {
     public class Storage
     {
+        private const string DefaultName = "Latest";
+
         // MyFileSystem.UserDataPath ~= C:\Users\%USERNAME%\AppData\Roaming\SpaceEngineers
         private static string UserDataDir => Path.Combine(MyFileSystem.UserDataPath, "ToolbarManager");
         private static string CharacterDir => Path.Combine(UserDataDir, "Character");
@@ -34,7 +36,7 @@ namespace ToolbarManager.Logic
             if (!Valid)
                 return;
 
-            MyGuiSandbox.AddScreen(new NameDialog(OnNameSpecified, "Save character toolbar", "current"));
+            MyGuiSandbox.AddScreen(new NameDialog(OnNameSpecified, "Save character toolbar", DefaultName));
         }
 
         private void OnNameSpecified(string name)
@@ -59,7 +61,7 @@ namespace ToolbarManager.Logic
 
         private void OnLoadCharacterToolbar()
         {
-            MyGuiSandbox.AddScreen(new ListDialog(OnItemSelected, "Load character toolbar", "current", CharacterDir));
+            MyGuiSandbox.AddScreen(new ListDialog(OnItemSelected, "Load character toolbar", DefaultName, CharacterDir));
         }
 
         private void OnItemSelected(string name, bool merge)

@@ -24,7 +24,7 @@ namespace ToolbarManager.Gui
             Action<string> callBack,
             string caption,
             string defaultName,
-            int maxLength = 30)
+            int maxLength = 40)
             : base(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.28f), MyGuiConstants.SCREEN_BACKGROUND_COLOR * MySandboxGame.Config.UIBkOpacity, true)
         {
             this.callBack = callBack;
@@ -60,6 +60,7 @@ namespace ToolbarManager.Gui
             nameBox = new MyGuiControlTextbox(new Vector2(0.0f, -0.027f), maxLength: maxLength);
             nameBox.Text = defaultName;
             nameBox.Size = new Vector2(0.385f, 1f);
+            nameBox.SelectAll();
             Controls.Add(nameBox);
 
             okButton = new MyGuiControlButton(originAlign: MyGuiDrawAlignEnum.HORISONTAL_RIGHT_AND_VERTICAL_CENTER, text: MyTexts.Get(MyCommonTexts.Ok), onButtonClick: OnOk);
