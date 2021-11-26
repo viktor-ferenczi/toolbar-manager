@@ -132,6 +132,9 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Logic\Toolbar.cs" />
+        <Compile Include="Logic\Storage.cs" />
+        <Compile Include="Logic\Slot.cs" />
         <Compile Include="Patches\MyGuiScreenToolbarConfigBasePatch.cs" />
         <Compile Include="Plugin.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
