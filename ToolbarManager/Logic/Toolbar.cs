@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml.Serialization;
 using Sandbox.Game.Screens.Helpers;
 using VRage.Game;
 using VRage.ObjectBuilders;
@@ -11,6 +10,8 @@ namespace ToolbarManager.Logic
     public class Toolbar
     {
         private readonly List<Slot> slots = new List<Slot>();
+        public int Count => slots.Count;
+        public bool IsEmpty => slots.Count == 0;
 
         public Toolbar(MyToolbar toolbar)
         {
@@ -30,6 +31,11 @@ namespace ToolbarManager.Logic
             {
                 slots.Add(new Slot(index, toolbarBuilder.Slots[index].Data));
             }
+        }
+
+        public void Clear()
+        {
+            slots.Clear();
         }
 
         public static Toolbar Read(string path)

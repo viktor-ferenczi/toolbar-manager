@@ -7,9 +7,8 @@ namespace ToolbarManager.Logic
     public class Slot
     {
         public readonly int Index;
-        public MyDefinitionId Id { get; private set; }
         public MyObjectBuilder_ToolbarItem Builder { get; private set; }
-
+        public MyDefinitionId Id => Builder?.GetId() ?? default(MyDefinitionId);
         public int Page => Index / 9;
         public int Number => Index % 9;
         public bool IsEmpty => Builder == null;
@@ -26,7 +25,6 @@ namespace ToolbarManager.Logic
             if (!MyDefinitionManager.Static.TryGetDefinition(Id, out MyDefinitionBase definitionBase))
                 return;
 
-            Id = id;
             Builder = MyToolbarItemFactory.ObjectBuilderFromDefinition(definitionBase);
         }
 
@@ -38,7 +36,6 @@ namespace ToolbarManager.Logic
                 return;
 
             Builder = item.GetObjectBuilder();
-            Id = Builder.GetId();
         }
 
         public Slot(int index, MyObjectBuilder_ToolbarItem itemBuilder)
@@ -49,7 +46,6 @@ namespace ToolbarManager.Logic
                 return;
 
             Builder = itemBuilder;
-            Id = itemBuilder.GetId();
         }
 
         public Slot(int index, MyToolbarItemDefinition itemDefinition)
@@ -59,13 +55,11 @@ namespace ToolbarManager.Logic
             if (itemDefinition == null)
                 return;
 
-            Id = itemDefinition.Definition.Id;
             Builder = itemDefinition.GetObjectBuilder();
         }
 
         public void Clear()
         {
-            Id = default(MyDefinitionId);
             Builder = null;
         }
 
@@ -79,7 +73,6 @@ namespace ToolbarManager.Logic
             }
 
             Builder = toolbarItem.GetObjectBuilder();
-            Id = Builder.GetId();
         }
 
         public void Set(MyToolbar toolbar)
