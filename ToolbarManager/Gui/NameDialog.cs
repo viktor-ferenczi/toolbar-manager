@@ -4,34 +4,33 @@ using Sandbox.Game.Gui;
 using Sandbox.Game.Localization;
 using Sandbox.Graphics.GUI;
 using VRage;
-using VRage.Input;
 using VRage.Utils;
 using VRageMath;
 
 namespace ToolbarManager.Gui
 {
-    class NameDialog : MyGuiBlueprintScreenBase
+    class NameDialog : MyGuiScreenDebugBase
     {
         private MyGuiControlTextbox nameBox;
         private MyGuiControlButton okButton;
         private MyGuiControlButton cancelButton;
-        private readonly string defaultName;
-        private readonly string caption;
-        private readonly int maxTextLength;
+
         private readonly Action<string> callBack;
+        private readonly string caption;
+        private readonly string defaultName;
+        private readonly int maxLength;
 
         public NameDialog(
             Action<string> callBack,
-            string caption = "",
-            string defaultName = "",
-            int maxLenght = 20,
-            float textBoxWidth = 0.2f)
-            : base(new Vector2(0.5f, 0.5f), new Vector2(0.4971429f, 0.2805344f), MyGuiConstants.SCREEN_BACKGROUND_COLOR * MySandboxGame.Config.UIBkOpacity, true)
+            string caption,
+            string defaultName,
+            int maxLength = 30)
+            : base(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.28f), MyGuiConstants.SCREEN_BACKGROUND_COLOR * MySandboxGame.Config.UIBkOpacity, true)
         {
-            maxTextLength = maxLenght;
-            this.caption = caption;
             this.callBack = callBack;
+            this.caption = caption;
             this.defaultName = defaultName;
+            this.maxLength = maxLength;
 
             RecreateControls(true);
 
@@ -46,25 +45,27 @@ namespace ToolbarManager.Gui
         {
             base.RecreateControls(constructor);
 
-            AddCaption(caption, Color.White.ToVector4(), new Vector2(0.0f, 3f / 1000f));
+            var dialogSize = m_size ?? Vector2.One;
+
+            AddCaption(caption, Color.White.ToVector4(), new Vector2(0.0f, 0.003f));
 
             var controlSeparatorList1 = new MyGuiControlSeparatorList();
-            controlSeparatorList1.AddHorizontal(new Vector2(0.0f, 0.0f) - new Vector2((float)(m_size.Value.X * 0.779999971389771 / 2.0), (float)(m_size.Value.Y / 2.0 - 0.0750000029802322)), m_size.Value.X * 0.78f);
+            controlSeparatorList1.AddHorizontal(new Vector2(-0.39f * dialogSize.X, -0.5f * dialogSize.Y + 0.075f), dialogSize.X * 0.78f);
             Controls.Add(controlSeparatorList1);
 
             var controlSeparatorList2 = new MyGuiControlSeparatorList();
-            controlSeparatorList2.AddHorizontal(new Vector2(0.0f, 0.0f) - new Vector2((float)(m_size.Value.X * 0.779999971389771 / 2.0), (float)(-(double)m_size.Value.Y / 2.0 + 0.123000003397465)), m_size.Value.X * 0.78f);
+            controlSeparatorList2.AddHorizontal(new Vector2(-0.39f * dialogSize.X, +0.5f * dialogSize.Y - 0.123f), dialogSize.X * 0.78f);
             Controls.Add(controlSeparatorList2);
 
-            nameBox = new MyGuiControlTextbox(new Vector2(0.0f, -0.027f), maxLength: maxTextLength);
+            nameBox = new MyGuiControlTextbox(new Vector2(0.0f, -0.027f), maxLength: maxLength);
             nameBox.Text = defaultName;
             nameBox.Size = new Vector2(0.385f, 1f);
             Controls.Add(nameBox);
 
-            okButton = new MyGuiControlButton(originAlign: MyGuiDrawAlignEnum.HORISONTAL_RIGHT_AND_VERTICAL_CENTER, text: MyTexts.Get(MyCommonTexts.Ok), onButtonClick: new Action<MyGuiControlButton>(OnOk));
-            cancelButton = new MyGuiControlButton(originAlign: MyGuiDrawAlignEnum.HORISONTAL_LEFT_AND_VERTICAL_CENTER, text: MyTexts.Get(MyCommonTexts.Cancel), onButtonClick: new Action<MyGuiControlButton>(OnCancel));
+            okButton = new MyGuiControlButton(originAlign: MyGuiDrawAlignEnum.HORISONTAL_RIGHT_AND_VERTICAL_CENTER, text: MyTexts.Get(MyCommonTexts.Ok), onButtonClick: OnOk);
+            cancelButton = new MyGuiControlButton(originAlign: MyGuiDrawAlignEnum.HORISONTAL_LEFT_AND_VERTICAL_CENTER, text: MyTexts.Get(MyCommonTexts.Cancel), onButtonClick: OnCancel);
 
-            var okPosition = new Vector2(1f / 500f, (float)((double)m_size.Value.Y / 2.0 - 0.0710000023245811));
+            var okPosition = new Vector2(0.001f, 0.5f * dialogSize.Y - 0.071f);
             var halfDistance = new Vector2(0.018f, 0.0f);
 
             okButton.Position = okPosition - halfDistance;
@@ -76,37 +77,23 @@ namespace ToolbarManager.Gui
             Controls.Add(okButton);
             Controls.Add(cancelButton);
 
-            var myGuiControlLabel = new MyGuiControlLabel();
-            myGuiControlLabel.Position = okButton.Position;
-            myGuiControlLabel.Name = GAMEPAD_HELP_LABEL_NAME;
-            myGuiControlLabel.OriginAlign = MyGuiDrawAlignEnum.HORISONTAL_RIGHT_AND_VERTICAL_BOTTOM;
+            var myGuiControlLabel = new MyGuiControlLabel
+            {
+                Position = okButton.Position,
+                Name = GAMEPAD_HELP_LABEL_NAME,
+                OriginAlign = MyGuiDrawAlignEnum.HORISONTAL_RIGHT_AND_VERTICAL_BOTTOM
+            };
             Controls.Add(myGuiControlLabel);
 
             GamepadHelpTextId = MySpaceTexts.DialogBlueprintRename_GamepadHelp;
         }
 
-        public override bool Update(bool hasFocus)
-        {
-            okButton.Visible = !MyInput.Static.IsJoystickLastUsed;
-            cancelButton.Visible = !MyInput.Static.IsJoystickLastUsed;
-            return base.Update(hasFocus);
-        }
-
-        public override void HandleInput(bool receivedFocusInThisUpdate)
-        {
-            base.HandleInput(receivedFocusInThisUpdate);
-
-            if (receivedFocusInThisUpdate)
-                return;
-
-            if (MyControllerHelper.IsControl(MyControllerHelper.CX_GUI, MyControlsGUI.BUTTON_X))
-                OnOk(null);
-
-            if (!MyControllerHelper.IsControl(MyControllerHelper.CX_GUI, MyControlsGUI.BUTTON_B))
-                return;
-
-            OnCancel(null);
-        }
+        // public override bool Update(bool hasFocus)
+        // {
+        //     okButton.Visible = !MyInput.Static.IsJoystickLastUsed;
+        //     cancelButton.Visible = !MyInput.Static.IsJoystickLastUsed;
+        //     return base.Update(hasFocus);
+        // }
 
         private void CallResultCallback(string text)
         {

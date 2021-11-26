@@ -22,7 +22,7 @@ namespace ToolbarManager.Logic
         {
             Index = index;
 
-            if (!MyDefinitionManager.Static.TryGetDefinition(Id, out MyDefinitionBase definitionBase))
+            if (!MyDefinitionManager.Static.TryGetDefinition(id, out MyDefinitionBase definitionBase))
                 return;
 
             Builder = MyToolbarItemFactory.ObjectBuilderFromDefinition(definitionBase);

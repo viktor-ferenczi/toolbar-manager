@@ -34,7 +34,7 @@ namespace ToolbarManager.Logic
             if (!Valid)
                 return;
 
-            MyGuiSandbox.AddScreen(new NameDialog(OnNameSpecified, "Name your toolbar", "current", maxLenght: 50));
+            MyGuiSandbox.AddScreen(new NameDialog(OnNameSpecified, "Save character toolbar", "current"));
         }
 
         private void OnNameSpecified(string name)
@@ -43,28 +43,38 @@ namespace ToolbarManager.Logic
 
             Directory.CreateDirectory(CharacterDir);
 
-            name = name.Replace('?', '.').Replace('*', '-').Replace('\\', '_').Replace('/', '-');
+            name = PathExt.SanitizeFileName(name);
             var path = Path.Combine(CharacterDir, $"{name}.xml");
 
             try
             {
                 toolbar.Write(path);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                MyLog.Default.Error("ToolbarManager: Failed to save character toolbar \"{name}\" to file \"{path}\"");
-                MyGuiSandboxExtensions.Show( "Failed to save character toolbar", "Error");
+                MyLog.Default.Error($"ToolbarManager: Failed to save character toolbar \"{{name}}\" to file \"{{path}}\": {e}");
+                MyGuiSandboxExt.Show("Failed to save character toolbar", "Error");
             }
         }
 
         private void OnLoadCharacterToolbar()
         {
+            MyGuiSandbox.AddScreen(new ListDialog(OnItemSelected, "Load character toolbar", "current", CharacterDir));
+        }
+
+        private void OnItemSelected(string name, bool merge)
+        {
             if (!Valid)
                 return;
 
-            var path = Path.Combine(CharacterDir, "toolbar.xml");
+            name = PathExt.SanitizeFileName(name);
+            var path = Path.Combine(CharacterDir, $"{name}.xml");
             var toolbar = Toolbar.Read(path);
-            toolbar.Set(Character.Toolbar);
+
+            if (merge)
+                toolbar.Merge(Character.Toolbar);
+            else
+                toolbar.Set(Character.Toolbar);
         }
     }
 }
