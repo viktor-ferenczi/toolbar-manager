@@ -6,6 +6,7 @@ using Sandbox.Graphics.GUI;
 using VRage;
 using VRage.Utils;
 using VRageMath;
+// ReSharper disable VirtualMemberCallInConstructor
 #pragma warning disable 618
 
 namespace ToolbarManager.Gui
@@ -41,33 +42,35 @@ namespace ToolbarManager.Gui
 
             OnEnterCallback = ReturnOk;
         }
+        
+        private Vector2 DialogSize => m_size ?? Vector2.One;
 
         public override void RecreateControls(bool constructor)
         {
             base.RecreateControls(constructor);
 
-            var dialogSize = m_size ?? Vector2.One;
-
             AddCaption(caption, Color.White.ToVector4(), new Vector2(0.0f, 0.003f));
 
             var controlSeparatorList1 = new MyGuiControlSeparatorList();
-            controlSeparatorList1.AddHorizontal(new Vector2(-0.39f * dialogSize.X, -0.5f * dialogSize.Y + 0.075f), dialogSize.X * 0.78f);
+            controlSeparatorList1.AddHorizontal(new Vector2(-0.39f * DialogSize.X, -0.5f * DialogSize.Y + 0.075f), DialogSize.X * 0.78f);
             Controls.Add(controlSeparatorList1);
 
             var controlSeparatorList2 = new MyGuiControlSeparatorList();
-            controlSeparatorList2.AddHorizontal(new Vector2(-0.39f * dialogSize.X, +0.5f * dialogSize.Y - 0.123f), dialogSize.X * 0.78f);
+            controlSeparatorList2.AddHorizontal(new Vector2(-0.39f * DialogSize.X, +0.5f * DialogSize.Y - 0.123f), DialogSize.X * 0.78f);
             Controls.Add(controlSeparatorList2);
 
-            nameBox = new MyGuiControlTextbox(new Vector2(0.0f, -0.027f), maxLength: maxLength);
-            nameBox.Text = defaultName;
-            nameBox.Size = new Vector2(0.385f, 1f);
+            nameBox = new MyGuiControlTextbox(new Vector2(0.0f, -0.027f), maxLength: maxLength)
+            {
+                Text = defaultName,
+                Size = new Vector2(0.385f, 1f)
+            };
             nameBox.SelectAll();
             Controls.Add(nameBox);
 
             okButton = new MyGuiControlButton(originAlign: MyGuiDrawAlignEnum.HORISONTAL_RIGHT_AND_VERTICAL_CENTER, text: MyTexts.Get(MyCommonTexts.Ok), onButtonClick: OnOk);
             cancelButton = new MyGuiControlButton(originAlign: MyGuiDrawAlignEnum.HORISONTAL_LEFT_AND_VERTICAL_CENTER, text: MyTexts.Get(MyCommonTexts.Cancel), onButtonClick: OnCancel);
 
-            var okPosition = new Vector2(0.001f, 0.5f * dialogSize.Y - 0.071f);
+            var okPosition = new Vector2(0.001f, 0.5f * DialogSize.Y - 0.071f);
             var halfDistance = new Vector2(0.018f, 0.0f);
 
             okButton.Position = okPosition - halfDistance;
@@ -78,24 +81,7 @@ namespace ToolbarManager.Gui
 
             Controls.Add(okButton);
             Controls.Add(cancelButton);
-
-            var myGuiControlLabel = new MyGuiControlLabel
-            {
-                Position = okButton.Position,
-                Name = GAMEPAD_HELP_LABEL_NAME,
-                OriginAlign = MyGuiDrawAlignEnum.HORISONTAL_RIGHT_AND_VERTICAL_BOTTOM
-            };
-            Controls.Add(myGuiControlLabel);
-
-            GamepadHelpTextId = MySpaceTexts.DialogBlueprintRename_GamepadHelp;
         }
-
-        // public override bool Update(bool hasFocus)
-        // {
-        //     okButton.Visible = !MyInput.Static.IsJoystickLastUsed;
-        //     cancelButton.Visible = !MyInput.Static.IsJoystickLastUsed;
-        //     return base.Update(hasFocus);
-        // }
 
         private void CallResultCallback(string text)
         {

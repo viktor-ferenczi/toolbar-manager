@@ -10,6 +10,7 @@ using VRage;
 using VRage.Game;
 using VRage.Utils;
 using VRageMath;
+// ReSharper disable VirtualMemberCallInConstructor
 
 namespace ToolbarManager.Gui
 {
@@ -52,25 +53,34 @@ namespace ToolbarManager.Gui
         {
             base.RecreateControls(constructor);
 
-            var dialogSize = m_size ?? Vector2.One;
-
             AddCaption(caption, Color.White.ToVector4(), new Vector2(0.0f, 0.003f));
 
+            CreateListBox();
+            CreateButtons();
+        }
+
+        private Vector2 DialogSize => m_size ?? Vector2.One;
+
+        private void CreateListBox()
+        {
             const float scrollbarWidth = 0.041f;
             const float listItemHeight = 0.034f;
-            listBox = new MyGuiControlListbox(new Vector2(0.001f, -0.5f * dialogSize.Y + 0.1f))
+            listBox = new MyGuiControlListbox(new Vector2(0.001f, -0.5f * DialogSize.Y + 0.1f))
             {
                 MultiSelect = false,
                 VisualStyle = MyGuiControlListboxStyleEnum.Default,
                 OriginAlign = MyGuiDrawAlignEnum.HORISONTAL_CENTER_AND_VERTICAL_TOP,
-                VisibleRowsCount = (int)((dialogSize.Y - 0.25f) / listItemHeight),
-                Size = new Vector2(0.85f * dialogSize.X, dialogSize.Y - 0.25f)
+                VisibleRowsCount = (int)((DialogSize.Y - 0.25f) / listItemHeight),
+                Size = new Vector2(0.85f * DialogSize.X, DialogSize.Y - 0.25f)
             };
             ListFiles();
-            listBox.ItemSize = new Vector2(0.85f * dialogSize.X - scrollbarWidth, listBox.ItemSize.Y);
+            listBox.ItemSize = new Vector2(0.85f * DialogSize.X - scrollbarWidth, listBox.ItemSize.Y);
             listBox.ItemDoubleClicked += OnItemDoubleClicked;
             Controls.Add(listBox);
+        }
 
+        private void CreateButtons()
+        {
             loadButton = new MyGuiControlButton(
                 visualStyle: MyGuiControlButtonStyleEnum.Default,
                 originAlign: MyGuiDrawAlignEnum.HORISONTAL_CENTER_AND_VERTICAL_CENTER,
@@ -96,8 +106,8 @@ namespace ToolbarManager.Gui
                 originAlign: MyGuiDrawAlignEnum.HORISONTAL_CENTER_AND_VERTICAL_CENTER,
                 text: MyTexts.Get(MyCommonTexts.Cancel), onButtonClick: OnCancel);
 
-            var xs = 0.85f * dialogSize.X;
-            var y = 0.5f * (dialogSize.Y - 0.15f);
+            var xs = 0.85f * DialogSize.X;
+            var y = 0.5f * (DialogSize.Y - 0.15f);
             loadButton.Position = new Vector2(-0.39f * xs, y);
             mergeButton.Position = new Vector2(-0.16f * xs, y);
             renameButton.Position = new Vector2(0.06f * xs, y);
@@ -115,16 +125,6 @@ namespace ToolbarManager.Gui
             Controls.Add(renameButton);
             Controls.Add(deleteButton);
             Controls.Add(cancelButton);
-
-            var myGuiControlLabel = new MyGuiControlLabel
-            {
-                Position = loadButton.Position,
-                Name = GAMEPAD_HELP_LABEL_NAME,
-                OriginAlign = MyGuiDrawAlignEnum.HORISONTAL_RIGHT_AND_VERTICAL_BOTTOM
-            };
-            Controls.Add(myGuiControlLabel);
-
-            GamepadHelpTextId = MySpaceTexts.DialogBlueprintRename_GamepadHelp;
         }
 
         private void ListFiles()
@@ -146,13 +146,6 @@ namespace ToolbarManager.Gui
             if (TryFindListItem(defaultName, out var index))
                 listBox.SelectSingleItem(listBox.Items[index]);
         }
-
-        // public override bool Update(bool hasFocus)
-        // {
-        //     loadButton.Visible = !MyInput.Static.IsJoystickLastUsed;
-        //     cancelButton.Visible = !MyInput.Static.IsJoystickLastUsed;
-        //     return base.Update(hasFocus);
-        // }
 
         private void OnItemDoubleClicked(MyGuiControlListbox _)
         {

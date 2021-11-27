@@ -31,9 +31,8 @@ namespace ToolbarManager.Patches
             {
                 Text = "Save",
                 Name = "SaveToolbarButton",
-                VisualStyle = MyGuiControlButtonStyleEnum.Tiny,
-                Position = new Vector2(-0.425f, 0.425f),
-                Size = new Vector2(0.2f, 0.1f)
+                VisualStyle = MyGuiControlButtonStyleEnum.Small,
+                Position = new Vector2(-0.425f, 0.41f)
             };
             button.ButtonClicked += _ => OnSaveCharacterToolbar?.Invoke();
             __instance.Elements.Add(button);
@@ -45,8 +44,8 @@ namespace ToolbarManager.Patches
             {
                 Text = "Load",
                 Name = "LoadToolbarButton",
-                VisualStyle = MyGuiControlButtonStyleEnum.Tiny,
-                Position = new Vector2(-0.375f, 0.425f)
+                VisualStyle = MyGuiControlButtonStyleEnum.Small,
+                Position = new Vector2(-0.425f, 0.46f)
             };
             button.ButtonClicked += _ => OnLoadCharacterToolbar?.Invoke();
             __instance.Elements.Add(button);
