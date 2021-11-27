@@ -10,6 +10,7 @@ using VRage;
 using VRage.Game;
 using VRage.Utils;
 using VRageMath;
+
 // ReSharper disable VirtualMemberCallInConstructor
 
 namespace ToolbarManager.Gui

@@ -6,6 +6,7 @@ using Sandbox.Graphics.GUI;
 using VRage;
 using VRage.Utils;
 using VRageMath;
+
 // ReSharper disable VirtualMemberCallInConstructor
 #pragma warning disable 618
 
@@ -42,7 +43,7 @@ namespace ToolbarManager.Gui
 
             OnEnterCallback = ReturnOk;
         }
-        
+
         private Vector2 DialogSize => m_size ?? Vector2.One;
 
         public override void RecreateControls(bool constructor)
