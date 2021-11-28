@@ -4,11 +4,11 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
+using LitJson;
 using Sandbox.Common.ObjectBuilders;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.Screens.Helpers;
-using ToolbarManager.Extensions;
 using VRage.Game;
 using VRage.Game.Entity;
 using VRage.ObjectBuilders;
@@ -19,8 +19,6 @@ namespace ToolbarManager.Logic
     {
         private readonly MyToolbarType type;
         private readonly List<Slot> slots = new List<Slot>();
-        public int Count => slots.Count;
-        public bool IsEmpty => slots.Count == 0;
 
         public Toolbar(MyToolbar toolbar)
         {
@@ -33,7 +31,7 @@ namespace ToolbarManager.Logic
                 slots.Add(new Slot(index, toolbar.GetItemAtIndex(index)));
         }
 
-        public Toolbar(MyObjectBuilder_Toolbar toolbarBuilder)
+        private Toolbar(MyObjectBuilder_Toolbar toolbarBuilder)
         {
             if (toolbarBuilder == null)
                 return;
@@ -57,7 +55,7 @@ namespace ToolbarManager.Logic
                 return Read(stream);
         }
 
-        public static Toolbar Read(StreamReader stream)
+        private static Toolbar Read(StreamReader stream)
         {
             MyObjectBuilderSerializer.DeserializeXML<MyObjectBuilder_Toolbar>(stream.BaseStream, out var toolbarBuilder);
             return new Toolbar(toolbarBuilder);
@@ -69,23 +67,88 @@ namespace ToolbarManager.Logic
                 Write(stream);
         }
 
-        public void Write(StreamWriter stream)
+        private void Write(StreamWriter stream)
         {
             var builder = new MyObjectBuilder_Toolbar
             {
                 ToolbarType = type
             };
 
-            for (var index = 0; index < slots.Count; index++)
+            foreach (var slot in slots)
             {
                 builder.Slots.Add(new MyObjectBuilder_Toolbar.Slot
                 {
-                    Index = index,
-                    Data = slots[index].Builder
+                    Index = slot.Index,
+                    Data = slot.Builder
                 });
             }
 
             MyObjectBuilderSerializer.SerializeXML(stream.BaseStream, builder);
+        }
+
+        public void WriteJson(string path)
+        {
+            using (var stream = new StreamWriter(path))
+                WriteJson(stream);
+        }
+
+        private void WriteJson(StreamWriter stream)
+        {
+            var d = new JsonData();
+            d["ToolbarType"] = type.ToString();
+
+            var ss = new JsonData();
+            ss.SetJsonType(JsonType.Array);
+            d["Slots"] = ss;
+
+            foreach (var slot in slots)
+            {
+                var s = new JsonData();
+                s["Index"] = slot.Index;
+                s["Page"] = slot.Page;
+                s["Number"] = slot.Number;
+                s["IsEmpty"] = slot.IsEmpty;
+
+                if (slot.Builder == null)
+                {
+                    s["Type"] = "";
+                    s["Name"] = "";
+                }
+                else
+                {
+                    s["Type"] = slot.Builder.GetType().Name;
+                    switch (slot.Builder)
+                    {
+                        case MyObjectBuilder_ToolbarItemDefinition itemBuilder:
+                            s["Name"] = itemBuilder.DefinitionId.ToString();
+                            break;
+
+                        case MyObjectBuilder_ToolbarItemTerminalGroup groupBuilder:
+                            s["Name"] = groupBuilder.GroupName;
+                            break;
+
+                        case MyObjectBuilder_ToolbarItemTerminalBlock blockBuilder:
+                            if (MyEntities.TryGetEntityById(blockBuilder.BlockEntityId, out var block))
+                                s["Name"] = block.DisplayNameText;
+                            else
+                                s["Name"] = "?";
+                            break;
+
+                        default:
+                            s["Name"] = "??";
+                            break;
+                    }
+                }
+
+                ss.Add(s);
+            }
+
+            var writer = new JsonWriter
+            {
+                PrettyPrint = true,
+            };
+            d.ToJson(writer);
+            stream.Write(writer.ToString());
         }
 
         public void Set(MyToolbar toolbar)
