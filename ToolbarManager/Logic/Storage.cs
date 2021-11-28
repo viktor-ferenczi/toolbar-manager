@@ -1,7 +1,7 @@
 using System;
 using System.IO;
-using Sandbox.Game.Entities.Character;
-using Sandbox.Game.World;
+using System.Text;
+using Sandbox.Game.Screens.Helpers;
 using Sandbox.Graphics.GUI;
 using ToolbarManager.Extensions;
 using ToolbarManager.Gui;
@@ -17,36 +17,68 @@ namespace ToolbarManager.Logic
 
         // MyFileSystem.UserDataPath ~= C:\Users\%USERNAME%\AppData\Roaming\SpaceEngineers
         private static string UserDataDir => Path.Combine(MyFileSystem.UserDataPath, "ToolbarManager");
-        private static string CharacterDir => Path.Combine(UserDataDir, "Character");
-        private static string BlockDir => Path.Combine(UserDataDir, "Block");
-
-        private static MyCharacter Character => MySession.Static.LocalCharacter;
-        private static bool Valid => Character?.Toolbar != null;
 
         public Storage()
         {
-            MyGuiScreenToolbarConfigBasePatch.OnLoadCharacterToolbar += OnLoadCharacterToolbar;
-            MyGuiScreenToolbarConfigBasePatch.OnSaveCharacterToolbar += OnSaveCharacterToolbar;
+            MyGuiScreenToolbarConfigBasePatch.OnLoadToolbar += OnLoadToolbar;
+            MyGuiScreenToolbarConfigBasePatch.OnSaveToolbar += OnSaveToolbar;
 
             MyLog.Default.Info($"ToolbarManager: UserDataDir = \"{UserDataDir}\"");
         }
 
-        private void OnSaveCharacterToolbar()
+        private static string FormatPath(MyToolbar currentToolbar, string name)
         {
-            if (!Valid)
-                return;
+            var dir = FormatDir(currentToolbar);
+            var sanitizedName = PathExt.SanitizeFileName(name);
+            return Path.Combine(dir, $"{sanitizedName}.xml");
+        }
 
+        private static string FormatDir(MyToolbar currentToolbar)
+        {
+            var dir = Path.Combine(UserDataDir, currentToolbar.ToolbarType.ToString());
+            Directory.CreateDirectory(dir);
+            return dir;
+        }
+
+        private void OnSaveToolbar()
+        {
             MyGuiSandbox.AddScreen(new NameDialog(OnNameSpecified, "Save character toolbar", DefaultName));
         }
 
         private void OnNameSpecified(string name)
         {
-            var toolbar = new Toolbar(Character.Toolbar);
+            var currentToolbar = MyToolbarComponent.CurrentToolbar;
+            if (currentToolbar == null)
+                return;
 
-            Directory.CreateDirectory(CharacterDir);
+            var path = FormatPath(currentToolbar, name);
 
-            name = PathExt.SanitizeFileName(name);
-            var path = Path.Combine(CharacterDir, $"{name}.xml");
+            if (File.Exists(path))
+            {
+                MyGuiSandbox.AddScreen(
+                    MyGuiSandbox.CreateMessageBox(buttonType: MyMessageBoxButtonsType.YES_NO,
+                        messageText: new StringBuilder($"Are you sure to overwrite this saved toolbar?\r\n\r\n{name}"),
+                        messageCaption: new StringBuilder("Confirmation"),
+                        callback: result => OnOverwriteForSure(result, path)));
+            }
+            else
+            {
+                OnOverwriteForSure(MyGuiScreenMessageBox.ResultEnum.YES, path);
+            }
+        }
+
+        private void OnOverwriteForSure(MyGuiScreenMessageBox.ResultEnum result, string path)
+        {
+            if (result != MyGuiScreenMessageBox.ResultEnum.YES)
+                return;
+
+            var currentToolbar = MyToolbarComponent.CurrentToolbar;
+            if (currentToolbar == null)
+                return;
+
+            var toolbar = new Toolbar(currentToolbar);
+
+            toolbar.Dissociate(currentToolbar);
 
             try
             {
@@ -59,24 +91,31 @@ namespace ToolbarManager.Logic
             }
         }
 
-        private void OnLoadCharacterToolbar()
+        private void OnLoadToolbar()
         {
-            MyGuiSandbox.AddScreen(new ListDialog(OnItemSelected, "Load character toolbar", DefaultName, CharacterDir));
+            var currentToolbar = MyToolbarComponent.CurrentToolbar;
+            if (currentToolbar == null)
+                return;
+
+            MyGuiSandbox.AddScreen(new ListDialog(OnItemSelected, "Load character toolbar", DefaultName, FormatDir(currentToolbar)));
         }
 
         private void OnItemSelected(string name, bool merge)
         {
-            if (!Valid)
+            var currentToolbar = MyToolbarComponent.CurrentToolbar;
+            if (currentToolbar == null)
                 return;
 
-            name = PathExt.SanitizeFileName(name);
-            var path = Path.Combine(CharacterDir, $"{name}.xml");
+            var path = FormatPath(currentToolbar, name);
+
             var toolbar = Toolbar.Read(path);
 
+            toolbar.Associate(currentToolbar);
+
             if (merge)
-                toolbar.Merge(Character.Toolbar);
+                toolbar.Merge(currentToolbar);
             else
-                toolbar.Set(Character.Toolbar);
+                toolbar.Set(currentToolbar);
         }
     }
 }

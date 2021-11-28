@@ -181,30 +181,51 @@ namespace ToolbarManager.Gui
 
         private void OnRename(MyGuiControlButton _)
         {
-            var name = SelectedName;
-            if (name == "")
-                return;
-
-            MyGuiSandbox.AddScreen(new NameDialog(OnNewNameSpecified, "Rename saved toolbar", name));
-        }
-
-        private void OnNewNameSpecified(string newName)
-        {
-            newName = PathExt.SanitizeFileName(newName);
-
             var oldName = SelectedName;
             if (oldName == "")
                 return;
 
-            var oldPath = Path.Combine(dirPath, $"{oldName}.xml");
-            if (!File.Exists(oldPath))
-                return;
+            MyGuiSandbox.AddScreen(new NameDialog(newName => OnNewNameSpecified(oldName, newName), "Rename saved toolbar", oldName));
+        }
+
+        private void OnNewNameSpecified(string oldName, string newName)
+        {
+            newName = PathExt.SanitizeFileName(newName);
 
             var newPath = Path.Combine(dirPath, $"{newName}.xml");
-            File.Move(oldPath, newPath);
+            if (File.Exists(newPath))
+            {
+                MyGuiSandbox.AddScreen(
+                    MyGuiSandbox.CreateMessageBox(buttonType: MyMessageBoxButtonsType.YES_NO,
+                        messageText: new StringBuilder($"Are you sure to overwrite this saved toolbar?\r\n\r\n{newName}"),
+                        messageCaption: new StringBuilder("Confirmation"),
+                        callback: result => OnOverwriteForSure(result, oldName, newName)));
+            }
+            else
+            {
+                OnOverwriteForSure(MyGuiScreenMessageBox.ResultEnum.YES, oldName, newName);
+            }
+        }
 
-            if (TryFindListItem(oldName, out var index))
-                listBox.Items[index].Text = new StringBuilder(newName);
+        private void OnOverwriteForSure(MyGuiScreenMessageBox.ResultEnum result, string oldName, string newName)
+        {
+            if (result != MyGuiScreenMessageBox.ResultEnum.YES)
+                return;
+
+            var oldPath = Path.Combine(dirPath, $"{oldName}.xml");
+            var newPath = Path.Combine(dirPath, $"{newName}.xml");
+
+            if (File.Exists(newPath))
+                File.Delete(newPath);
+
+            if (File.Exists(oldPath))
+                File.Move(oldPath, newPath);
+
+            if (TryFindListItem(newName, out var overwrittenItemIndex))
+                listBox.Items.RemoveAt(overwrittenItemIndex);
+
+            if (TryFindListItem(oldName, out var renamedItemIndex))
+                listBox.Items[renamedItemIndex].Text = new StringBuilder(newName);
         }
 
         private void OnDelete(MyGuiControlButton _)
@@ -215,25 +236,19 @@ namespace ToolbarManager.Gui
 
             MyGuiSandbox.AddScreen(
                 MyGuiSandbox.CreateMessageBox(buttonType: MyMessageBoxButtonsType.YES_NO,
-                    messageText: new StringBuilder($"Are you sure to delete saved toolbar?\r\n\r\n{name}"),
+                    messageText: new StringBuilder($"Are you sure to delete this saved toolbar?\r\n\r\n{name}"),
                     messageCaption: new StringBuilder("Confirmation"),
-                    callback: OnDeleteForSure));
+                    callback: result => OnDeleteForSure(result, name)));
         }
 
-        private void OnDeleteForSure(MyGuiScreenMessageBox.ResultEnum result)
+        private void OnDeleteForSure(MyGuiScreenMessageBox.ResultEnum result, string name)
         {
             if (result != MyGuiScreenMessageBox.ResultEnum.YES)
                 return;
 
-            var name = SelectedName;
-            if (name == "")
-                return;
-
             var path = Path.Combine(dirPath, $"{name}.xml");
-            if (!File.Exists(path))
-                return;
-
-            File.Delete(path);
+            if (File.Exists(path))
+                File.Delete(path);
 
             if (TryFindListItem(name, out var index))
                 listBox.Items.RemoveAt(index);

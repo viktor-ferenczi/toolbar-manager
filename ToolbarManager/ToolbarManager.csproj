@@ -132,6 +132,7 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Extensions\MyCubeGridExt.cs" />
         <Compile Include="Extensions\MyGuiSandboxExt.cs" />
         <Compile Include="Extensions\PathExt.cs" />
         <Compile Include="Gui\ListDialog.cs" />
