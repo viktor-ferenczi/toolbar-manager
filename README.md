@@ -12,26 +12,25 @@ This plugin works for both offline and online multiplayer games without
 the need for any server side support. All your save files are local, 
 nothing is stored on a server.
 
-### Character toolbars
+### Toolbars
 
-New **Save** and **Load** buttons in the bottom left corner of the **G menu**. 
-
+The **G menu** has two new buttons to manage saved toolbars:
 - Save
 - Load
-- Merge
-- Rename
-- Delete
 
-_Merge is the same as load, but does not clear slots not used by the toolbar loaded._
+**Merge** is the same as **Load**, but does not clear slots not used by the toolbar loaded.
 
-Saved toolbars are stored in XML files: `%AppData%\Roaming\SpaceEngineers\ToolbarManager`
+Saved toolbars are stored as XML files under: `%AppData%\Roaming\SpaceEngineers\ToolbarManager`
+
+There are subdirectories for each toolbar type. Toolbars within the same type are compatible,
+altough they may not have the same amount of slots available.
+
+It is possible to save the toolbar from a cockpit and load into a remote control, for example.
 
 ### Planned features
-
-These features are in the making:
-
-- Support for block toolbars (cockpit, remote control, timer, sensor)
+- Showing the layout of the toolbar in the saved toolbar list
 - Restricting the load/merge operations to certain toolbar pages
+- Multiplying the available toolbar pages
 - Moving and swapping toolbar items using mouse drag&drop
 - Moving toolbar items between toolbar pages
 - Swapping toolbar pages
