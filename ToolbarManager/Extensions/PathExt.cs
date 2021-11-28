@@ -5,6 +5,7 @@ namespace ToolbarManager.Extensions
         public static string SanitizeFileName(string name)
         {
             return name
+                .Trim()
                 .Replace(':', '.')
                 .Replace('?', '.')
                 .Replace('*', '-')
