@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Sandbox.Game.Screens.Helpers;
@@ -13,10 +14,10 @@ namespace ToolbarManager.Logic
 {
     public class Storage
     {
-        private const string DefaultName = "Latest";
-
         // MyFileSystem.UserDataPath ~= C:\Users\%USERNAME%\AppData\Roaming\SpaceEngineers
         private static string UserDataDir => Path.Combine(MyFileSystem.UserDataPath, "ToolbarManager");
+
+        private readonly Dictionary<string, string> latestNames = new Dictionary<string, string>();
 
         public Storage()
         {
@@ -42,7 +43,13 @@ namespace ToolbarManager.Logic
 
         private void OnSaveToolbar()
         {
-            MyGuiSandbox.AddScreen(new NameDialog(OnNameSpecified, "Save character toolbar", DefaultName));
+            var currentToolbar = MyToolbarComponent.CurrentToolbar;
+            if (currentToolbar == null)
+                return;
+
+            var latestName = latestNames.GetValueOrDefault(currentToolbar.ToolbarType.ToString()) ?? "";
+
+            MyGuiSandbox.AddScreen(new NameDialog(OnNameSpecified, "Save character toolbar", latestName));
         }
 
         private void OnNameSpecified(string name)
@@ -76,12 +83,14 @@ namespace ToolbarManager.Logic
             if (currentToolbar == null)
                 return;
 
-            var toolbar = new Toolbar(currentToolbar);
+            var pathWithoutExtension = path.Substring(0, path.Length - 4);
 
-            toolbar.Dissociate(currentToolbar);
+            var toolbar = new Toolbar(currentToolbar);
 
             try
             {
+                toolbar.WriteJson( $"{pathWithoutExtension}.json");
+                toolbar.Dissociate(currentToolbar);
                 toolbar.Write(path);
             }
             catch (Exception e)
@@ -97,7 +106,9 @@ namespace ToolbarManager.Logic
             if (currentToolbar == null)
                 return;
 
-            MyGuiSandbox.AddScreen(new ListDialog(OnItemSelected, "Load character toolbar", DefaultName, FormatDir(currentToolbar)));
+            var latestName = latestNames.GetValueOrDefault(currentToolbar.ToolbarType.ToString()) ?? "";
+
+            MyGuiSandbox.AddScreen(new ListDialog(OnItemSelected, "Load character toolbar", latestName, FormatDir(currentToolbar)));
         }
 
         private void OnItemSelected(string name, bool merge)
@@ -105,6 +116,8 @@ namespace ToolbarManager.Logic
             var currentToolbar = MyToolbarComponent.CurrentToolbar;
             if (currentToolbar == null)
                 return;
+
+            latestNames[currentToolbar.ToolbarType.ToString()] = name;
 
             var path = FormatPath(currentToolbar, name);
 

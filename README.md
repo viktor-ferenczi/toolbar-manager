@@ -28,9 +28,8 @@ altough they may not have the same amount of slots available.
 It is possible to save the toolbar from a cockpit and load into a remote control, for example.
 
 ### Planned features
-- Showing the layout of the toolbar in the saved toolbar list
 - Restricting the load/merge operations to certain toolbar pages
-- Multiplying the available toolbar pages
+- Multiplying the available toolbar pages using new hotkeys and saved toolbars
 - Moving and swapping toolbar items using mouse drag&drop
 - Moving toolbar items between toolbar pages
 - Swapping toolbar pages
