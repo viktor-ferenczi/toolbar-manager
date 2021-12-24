@@ -25,11 +25,14 @@ namespace ToolbarManager.Patches
         [HarmonyPatch(nameof(MyGuiScreenToolbarConfigBase.RecreateControls))]
         private static void RecreateControlsPostfix(MyGuiScreenToolbarConfigBase __instance)
         {
-            createSaveButton(__instance);
-            createLoadButton(__instance);
+            var toolbarType = MyToolbarComponent.CurrentToolbar?.ToolbarType;
+            var enabled = toolbarType != null && toolbarType != MyToolbarType.None;
+
+            createSaveButton(__instance, enabled);
+            createLoadButton(__instance, enabled);
         }
 
-        private static void createSaveButton(MyGuiScreenToolbarConfigBase screen)
+        private static void createSaveButton(MyGuiScreenToolbarConfigBase screen, bool enabled)
         {
             var button = new MyGuiControlButton
             {
@@ -39,10 +42,11 @@ namespace ToolbarManager.Patches
                 Position = new Vector2(-0.425f, 0.41f)
             };
             button.ButtonClicked += _ => OnSaveToolbar?.Invoke();
+            button.Enabled = enabled;
             screen.Elements.Add(button);
         }
 
-        private static void createLoadButton(MyGuiScreenToolbarConfigBase screen)
+        private static void createLoadButton(MyGuiScreenToolbarConfigBase screen, bool enabled)
         {
             var button = new MyGuiControlButton
             {
@@ -52,6 +56,7 @@ namespace ToolbarManager.Patches
                 Position = new Vector2(-0.425f, 0.46f)
             };
             button.ButtonClicked += _ => OnLoadToolbar?.Invoke();
+            button.Enabled = enabled;
             screen.Elements.Add(button);
         }
     }
