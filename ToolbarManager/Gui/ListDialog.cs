@@ -16,7 +16,7 @@ using VRageMath;
 
 namespace ToolbarManager.Gui
 {
-    class ListDialog : MyGuiScreenDebugBase
+    public class ListDialog : MyGuiScreenDebugBase
     {
         private MyGuiControlTable toolbarTable;
         private MyGuiControlButton loadButton;

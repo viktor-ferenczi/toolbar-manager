@@ -12,7 +12,7 @@ using VRageMath;
 
 namespace ToolbarManager.Gui
 {
-    class NameDialog : MyGuiScreenDebugBase
+    public class NameDialog : MyGuiScreenDebugBase
     {
         private MyGuiControlTextbox nameBox;
         private MyGuiControlButton okButton;
