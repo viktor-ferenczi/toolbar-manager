@@ -49,7 +49,7 @@ namespace ToolbarManager.Gui
             CanHideOthers = true;
             CloseButtonEnabled = true;
 
-            OnEnterCallback = ReturnLoad;
+            m_onEnterCallback = ReturnLoad;
         }
 
         public override void RecreateControls(bool constructor)

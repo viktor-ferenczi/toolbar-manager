@@ -41,7 +41,7 @@ namespace ToolbarManager.Gui
             CanHideOthers = true;
             CloseButtonEnabled = true;
 
-            OnEnterCallback = ReturnOk;
+            m_onEnterCallback = ReturnOk;
         }
 
         private Vector2 DialogSize => m_size ?? Vector2.One;
