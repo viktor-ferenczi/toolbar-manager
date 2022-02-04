@@ -2,7 +2,6 @@ using System;
 using HarmonyLib;
 using Sandbox.Game.Gui;
 using Sandbox.Game.Screens.Helpers;
-using Sandbox.Game.World;
 using Sandbox.Graphics.GUI;
 using VRage.Game;
 using VRageMath;

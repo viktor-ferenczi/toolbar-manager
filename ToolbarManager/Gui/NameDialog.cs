@@ -12,7 +12,7 @@ using VRageMath;
 
 namespace ToolbarManager.Gui
 {
-    class NameDialog : MyGuiScreenDebugBase
+    public class NameDialog : MyGuiScreenDebugBase
     {
         private MyGuiControlTextbox nameBox;
         private MyGuiControlButton okButton;
@@ -41,7 +41,7 @@ namespace ToolbarManager.Gui
             CanHideOthers = true;
             CloseButtonEnabled = true;
 
-            OnEnterCallback = ReturnOk;
+            m_onEnterCallback = ReturnOk;
         }
 
         private Vector2 DialogSize => m_size ?? Vector2.One;

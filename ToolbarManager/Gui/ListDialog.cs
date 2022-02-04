@@ -16,7 +16,7 @@ using VRageMath;
 
 namespace ToolbarManager.Gui
 {
-    class ListDialog : MyGuiScreenDebugBase
+    public class ListDialog : MyGuiScreenDebugBase
     {
         private MyGuiControlTable toolbarTable;
         private MyGuiControlButton loadButton;
@@ -49,7 +49,7 @@ namespace ToolbarManager.Gui
             CanHideOthers = true;
             CloseButtonEnabled = true;
 
-            OnEnterCallback = ReturnLoad;
+            m_onEnterCallback = ReturnLoad;
         }
 
         public override void RecreateControls(bool constructor)
