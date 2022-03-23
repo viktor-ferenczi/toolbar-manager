@@ -2,6 +2,10 @@
 
 Toolbar Manager for the Space Engineers game.
 
+For support please [join the SE Mods Discord](https://discord.gg/PYPFPGf3Ca).
+
+Please consider [supporting my work on Patreon](https://www.patreon.com/semods).
+
 ## Features
 
 This plugin allows for saving and loading toolbars. For example you can 
@@ -53,15 +57,8 @@ After enabling the plugin it will be active for all single- and multiplayer worl
 - [SE Mods Discord](https://discord.gg/PYPFPGf3Ca)
 - [Plugin Loader Discord](https://discord.gg/6ETGRU3CzR)
 - [YouTube Channel](https://www.youtube.com/channel/UCc5ar3cW9qoOgdBb1FM_rxQ)
-- [Patreon](https://www.patreon.com/semods)
 - [Source code](https://github.com/viktor-ferenczi/toolbar-manager)
 - [Bug reports](https://discord.gg/x3Z8Ug5YkQ)
-
-Please support me on Patreon if you would like to receive regular updates 
-and improvements to this client plugin and to get the plugin updated as 
-new (potentially incompatible) game versions are released.
-
-Thank you and enjoy!
 
 ## Credits
 

@@ -147,6 +147,9 @@
       <None Include="packages.config" />
     </ItemGroup>
     <ItemGroup>
+      <Content Include="..\README.md">
+        <Link>README.md</Link>
+      </Content>
       <Content Include="deploy_debug.bat" />
       <Content Include="deploy_release.bat" />
     </ItemGroup>
