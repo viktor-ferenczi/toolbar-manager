@@ -145,10 +145,7 @@
     </ItemGroup>
     <ItemGroup>
       <Content Include="deploy.bat" />
-    </ItemGroup>
-    <ItemGroup>
       <None Include="packages.config" />
-      <Content Include="deploy.bat" />
       <Content Include="..\README.md">
         <Link>README.md</Link>
       </Content>
