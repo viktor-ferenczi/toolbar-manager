@@ -2,9 +2,12 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using HarmonyLib;
+using Sandbox.Game.Entities;
 using Sandbox.Game.Gui;
 using Sandbox.Game.Screens.Helpers;
-using Sandbox.Game.Screens.Helpers.RadialMenuActions;
+using Sandbox.Game.World;
+using Sandbox.Graphics.GUI;
+using ToolbarManager.Gui;
 using VRage.Input;
 
 namespace ToolbarManager.Patches
@@ -16,7 +19,7 @@ namespace ToolbarManager.Patches
         private static readonly List<MyKeys> PressedKeys = new List<MyKeys>();
         private static readonly StringBuilder MatchingKeys = new StringBuilder();
         // private static readonly ListDialog ListDialog = new ListDialog();
-        
+
         [HarmonyPostfix]
         [HarmonyPatch(nameof(MyGuiScreenGamePlay.HandleUnhandledInput))]
         public static void HandleUnhandledInputPrefix()
@@ -28,19 +31,17 @@ namespace ToolbarManager.Patches
         private static void OpenCubeBuilderOnKeypress()
         {
             GetPressedKeys();
-            if (MatchingKeys.Length == 1)
-            {
-                new MyActionShowProgressionTree().ExecuteAction();
-                if (MyGuiScreenGamePlay.ActiveGameplayScreen is MyGuiScreenCubeBuilder screen)
-                {
-                    var toolbarConfigBase = screen as MyGuiScreenToolbarConfigBase;
-                    var field = AccessTools.DeclaredField(typeof(MyGuiScreenToolbarConfigBase), "m_searchBox");
-                    if (field.GetValue(toolbarConfigBase) is MyGuiControlSearchBox searchBox)
-                    {
-                        searchBox.TextBox.Text = MatchingKeys.ToString();
-                    }
-                }
-            }
+            if (MatchingKeys.Length != 1)
+                return;
+
+            // Based on the code in MyActionShowProgressionTree.ExecuteAction, but with a different dialog class
+            if (!(MyGuiSandbox.CreateScreen(typeof(CustomToolbarConfigScreen), 0, MySession.Static.ControlledEntity as MyShipController, "ResearchPage", true, null) is CustomToolbarConfigScreen dialog))
+                return;
+            
+            MyGuiScreenGamePlay.ActiveGameplayScreen = dialog;
+            MyGuiSandbox.AddScreen(dialog);
+            
+            dialog.SetSearchText(MatchingKeys.ToString());
         }
 
         private static void GetPressedKeys()
