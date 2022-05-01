@@ -24,6 +24,7 @@ namespace ToolbarManager.Patches
         [HarmonyPatch(nameof(MyGuiScreenGamePlay.HandleUnhandledInput))]
         public static bool HandleUnhandledInputPrefix()
         {
+            // TODO: Add configuration dialog with checkbox to disable this feature
             if (MyGuiScreenGamePlay.ActiveGameplayScreen == null)
             {
                 GetPressedKeys();

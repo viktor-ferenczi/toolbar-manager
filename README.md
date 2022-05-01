@@ -33,7 +33,7 @@ It is possible to save the toolbar from a cockpit and load into a remote control
 
 ### Quick block selection
 
-For quick block selection type an upper case letter (SHIFT + letter).
+For quick block selection type an upper case letter (CTRL + SHIFT + Letter).
 It will open the G menu, enters the letter pressed as the first
 character into the search field, then runs an initial search.
 
@@ -54,6 +54,8 @@ the list of blocks in case of ambiguity.
 
 The order of letters and digits must match exactly.
 Separating multiple search strings by space is not supported.
+
+This feature works only with English A-Z characters.
 
 ### Planned features
 - Restricting the load/merge operations to certain toolbar pages
