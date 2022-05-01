@@ -1,6 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Gui;
+using Sandbox.Game.Screens.Helpers;
+using ToolbarManager.Extensions;
+using VRage.Game;
+using VRage.Input;
 
 namespace ToolbarManager.Gui
 {
@@ -45,6 +49,39 @@ namespace ToolbarManager.Gui
             }
 
             base.UpdateGridBlocksBySearchCondition(searchCondition);
+        }
+
+        public override void HandleInput(bool receivedFocusInThisUpdate)
+        {
+            if (MyInput.Static.IsNewKeyPressed(MyKeys.Enter))
+            {
+                LoadSelectedItem();
+                return;
+            }
+
+            base.HandleInput(receivedFocusInThisUpdate);
+        }
+
+        private void LoadSelectedItem()
+        {
+            if (m_gridBlocks.SelectedIndex == null)
+                return;
+
+            var selectedItem = m_gridBlocks.GetItemAt(m_gridBlocks.SelectedIndex ?? 0);
+            if (!(selectedItem?.UserData is GridItemUserData userData))
+                return;
+            
+            var toolbarItemBuilder = userData.ItemData();
+            if (toolbarItemBuilder is MyObjectBuilder_ToolbarItemEmpty)
+                return;
+            
+            var toolbarItem = MyToolbarItemFactory.CreateToolbarItem(userData.ItemData());
+            if (toolbarItem is MyToolbarItemActions && MyInput.Static.IsJoystickLastUsed)
+                return;
+
+            this.AddGridItemToToolbar(toolbarItemBuilder);
+            
+            CloseScreen();
         }
     }
 }
