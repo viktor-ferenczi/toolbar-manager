@@ -20,22 +20,25 @@ namespace ToolbarManager.Patches
         private static readonly StringBuilder MatchingKeys = new StringBuilder();
         // private static readonly ListDialog ListDialog = new ListDialog();
 
-        [HarmonyPostfix]
+        [HarmonyPrefix]
         [HarmonyPatch(nameof(MyGuiScreenGamePlay.HandleUnhandledInput))]
-        public static void HandleUnhandledInputPrefix()
+        public static bool HandleUnhandledInputPrefix()
         {
             if (MyGuiScreenGamePlay.ActiveGameplayScreen == null)
-                OpenCubeBuilderOnKeypress();
+            {
+                GetPressedKeys();
+                if (MatchingKeys.Length != 0)
+                {
+                    OpenCubeBuilder();
+                    return false;
+                }
+            }
+            return true;
         }
 
-        private static void OpenCubeBuilderOnKeypress()
+        private static void OpenCubeBuilder()
         {
-            GetPressedKeys();
-            if (MatchingKeys.Length != 1)
-                return;
-
-            // Based on the code in MyActionShowProgressionTree.ExecuteAction, but with a different dialog class
-            if (!(MyGuiSandbox.CreateScreen(typeof(CustomToolbarConfigScreen), 0, MySession.Static.ControlledEntity as MyShipController, "ResearchPage", true, null) is CustomToolbarConfigScreen dialog))
+            if (!(MyGuiSandbox.CreateScreen(typeof(CustomToolbarConfigScreen), 0, null, null) is CustomToolbarConfigScreen dialog))
                 return;
             
             MyGuiScreenGamePlay.ActiveGameplayScreen = dialog;

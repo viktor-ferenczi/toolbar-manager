@@ -133,7 +133,9 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="Extensions\MyGuiSandboxExt.cs" />
+        <Compile Include="Extensions\MyGuiScreenToolbarConfigBaseExt.cs" />
         <Compile Include="Extensions\PathExt.cs" />
+        <Compile Include="Gui\CustomSearchCondition.cs" />
         <Compile Include="Gui\CustomToolbarConfigScreen.cs" />
         <Compile Include="Gui\ListDialog.cs" />
         <Compile Include="Gui\NameDialog.cs" />

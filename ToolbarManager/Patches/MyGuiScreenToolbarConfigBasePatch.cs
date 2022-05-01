@@ -26,7 +26,7 @@ namespace ToolbarManager.Patches
         {
             var toolbarType = MyToolbarComponent.CurrentToolbar?.ToolbarType;
             var enabled = toolbarType != null && toolbarType != MyToolbarType.None;
-
+        
             createSaveButton(__instance, enabled);
             createLoadButton(__instance, enabled);
         }
