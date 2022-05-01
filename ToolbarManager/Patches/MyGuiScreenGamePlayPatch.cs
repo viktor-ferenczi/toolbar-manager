@@ -52,7 +52,7 @@ namespace ToolbarManager.Patches
             MatchingKeys.Clear();
             
             var myInput = MyInput.Static;
-            if (!myInput.IsAnyShiftKeyPressed())
+            if (!(myInput.IsAnyCtrlKeyPressed() && myInput.IsAnyShiftKeyPressed()))
                 return;
             
             myInput.GetPressedKeys(PressedKeys);
@@ -63,7 +63,7 @@ namespace ToolbarManager.Patches
                     continue;
                     
                 var c = name[0];
-                if ((c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9'))
+                if (c >= 'A' && c <= 'Z')
                     MatchingKeys.Append(c);
             }
         }
