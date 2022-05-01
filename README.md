@@ -31,6 +31,30 @@ altough they may not have the same amount of slots available.
 
 It is possible to save the toolbar from a cockpit and load into a remote control, for example.
 
+### Quick block selection
+
+For quick block selection type an upper case letter (SHIFT + letter).
+It will open the G menu, enters the letter pressed as the first
+character into the search field, then runs an initial search.
+
+Searching works differently from the original G menu if opened this way.
+Upper case letters and digits allow for skipping characters, 
+therefore it is enough to type the capitals of blocks names:
+
+- `AB` **Armor Blocks**
+- `PB` **Programmable Block**
+- `SK` **Survival Kit**
+- `AT` **Atmospheric Thrusters**
+- `LHT` **Large Hydrogen Thrusters**
+- `20A` **S-20A**
+- `211` **2x1x1 slope blocks**
+
+Adding subsequent lower case letters allows for narrowing down
+the list of blocks in case of ambiguity. 
+
+The order of letters and digits must match exactly.
+Separating multiple search strings by space is not supported.
+
 ### Planned features
 - Restricting the load/merge operations to certain toolbar pages
 - Multiplying the available toolbar pages using new hotkeys and saved toolbars
