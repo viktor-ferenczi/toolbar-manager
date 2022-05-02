@@ -2,9 +2,11 @@ using System.Diagnostics.CodeAnalysis;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Gui;
 using Sandbox.Game.Screens.Helpers;
+using Sandbox.Graphics.GUI;
 using ToolbarManager.Extensions;
 using VRage.Game;
 using VRage.Input;
+using VRageMath;
 
 namespace ToolbarManager.Gui
 {
@@ -12,6 +14,7 @@ namespace ToolbarManager.Gui
     public class CustomToolbarConfigScreen : MyGuiScreenCubeBuilder
     {
         private readonly CustomSearchCondition customSearchCondition = new CustomSearchCondition();
+        private MyGuiControlLabel searchInfoLabel;
 
         public CustomToolbarConfigScreen(int scrollOffset = 0, MyCubeBlock owner = null, int? gamepadSlot = null) : base(scrollOffset, owner, gamepadSlot)
         {
@@ -70,18 +73,33 @@ namespace ToolbarManager.Gui
             var selectedItem = m_gridBlocks.GetItemAt(m_gridBlocks.SelectedIndex ?? 0);
             if (!(selectedItem?.UserData is GridItemUserData userData))
                 return;
-            
+
             var toolbarItemBuilder = userData.ItemData();
             if (toolbarItemBuilder is MyObjectBuilder_ToolbarItemEmpty)
                 return;
-            
+
             var toolbarItem = MyToolbarItemFactory.CreateToolbarItem(userData.ItemData());
             if (toolbarItem is MyToolbarItemActions && MyInput.Static.IsJoystickLastUsed)
                 return;
 
             this.AddGridItemToToolbar(toolbarItemBuilder);
-            
+
             CloseScreen();
+        }
+
+        public override void RecreateControls(bool contructor)
+        {
+            base.RecreateControls(contructor);
+
+            searchInfoLabel = new MyGuiControlLabel(
+                new Vector2(m_searchBox.PositionX + m_searchBox.Size.X * 0.5f + 0.02f, m_searchBox.PositionY + 0.005f),
+                new Vector2(0.2f, m_searchBox.Size.Y))
+            {
+                Font = m_searchBox.TextBox.TextFont,
+                Text = "Quick Search Mode"
+            };
+
+            Controls.Add(searchInfoLabel);
         }
     }
 }
