@@ -59,10 +59,10 @@ The `BACKSLASH` (or `PIPE`) key opens the quick block search menu with an empty 
 
 Triggering quick block search works only with the English A-Z letters for now.
 
-There is no way to remap the above key combinations, but you can disable them
-in the plugin's configuration accessible from Plugin Loader's Plugins dialog.
+There is no way to remap the above key combinations.
 
 ### Planned features
+- Configuration dialog for changing keys and other features
 - Restricting the load/merge operations to certain toolbar pages
 - Multiplying the available toolbar pages using new hotkeys and saved toolbars
 - Moving and swapping toolbar items using mouse drag&drop
