@@ -33,29 +33,34 @@ It is possible to save the toolbar from a cockpit and load into a remote control
 
 ### Quick block selection
 
-For quick block selection type an upper case letter (CTRL + SHIFT + Letter).
-It will open the G menu, enters the letter pressed as the first
-character into the search field, then runs an initial search.
-
-Searching works differently from the original G menu if opened this way.
-Upper case letters and digits allow for skipping characters, 
-therefore it is enough to type the capitals of blocks names:
+Press `SHIFT+G` or `CTRL+SHIFT+Letter` to open the quick block search menu.
+It works the same way as the original menu, but the search rules are optimized
+to find blocks primarily by capital letters and digits:
 
 - `AB` **Armor Blocks**
 - `PB` **Programmable Block**
 - `SK` **Survival Kit**
 - `AT` **Atmospheric Thrusters**
 - `LHT` **Large Hydrogen Thrusters**
-- `20A` **S-20A**
-- `211` **2x1x1 slope blocks**
+- `211` **All 2x1x1 armor blocks**
 
-Adding subsequent lower case letters allows for narrowing down
-the list of blocks in case of ambiguity. 
+Adding the subsequent lower case letters after an upper case one allows 
+for narrowing down in case of ambiguity:
 
-The order of letters and digits must match exactly.
-Separating multiple search strings by space is not supported.
+- `PH` **Parachute Hatch** and **Point Hand**
+- `PHat` **Parachute Hatch** only
 
-This feature works only with English A-Z characters.
+The order of characters must match exactly. Lower case characters and
+space are skipped after a matching upper chase character or digit. 
+
+Separating multiple search patterns by space is not supported, currently.
+
+The `BACKSLASH` (or `PIPE`) key opens the quick block search menu with an empty search box.
+
+Triggering quick block search works only with the English A-Z letters for now.
+
+There is no way to remap the above key combinations, but you can disable them
+in the plugin's configuration accessible from Plugin Loader's Plugins dialog.
 
 ### Planned features
 - Restricting the load/merge operations to certain toolbar pages
