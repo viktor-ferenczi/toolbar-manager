@@ -33,9 +33,9 @@ It is possible to save the toolbar from a cockpit and load into a remote control
 
 ### Quick block selection
 
-Press `SHIFT+G` or `CTRL+SHIFT+Letter` to open the quick block search menu.
-It works the same way as the original menu, but the search rules are optimized
-to find blocks primarily by capital letters and digits:
+Press the `BACKSLASH` or `PIPE` key (on English keyboard) to open the quick 
+block search menu. It works the same way as the original menu, but the search 
+rules are optimized to find blocks primarily by capital letters and digits:
 
 - `AB` **Armor Blocks**
 - `PB` **Programmable Block**
@@ -55,14 +55,7 @@ space are skipped after a matching upper chase character or digit.
 
 Separating multiple search patterns by space is not supported, currently.
 
-The `BACKSLASH` (or `PIPE`) key opens the quick block search menu with an empty search box.
-
-Triggering quick block search works only with the English A-Z letters for now.
-
-There is no way to remap the above key combinations.
-
 ### Planned features
-- Configuration dialog for changing keys and other features
 - Restricting the load/merge operations to certain toolbar pages
 - Multiplying the available toolbar pages using new hotkeys and saved toolbars
 - Moving and swapping toolbar items using mouse drag&drop

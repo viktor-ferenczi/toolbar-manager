@@ -28,7 +28,7 @@ namespace ToolbarManager.Patches
             if (MyGuiScreenGamePlay.ActiveGameplayScreen != null || !(MySession.Static.ControlledEntity is MyCharacter))
                 return true;
 
-            var myInput = MyInput.Static;
+            /* Disabled due to Issue #12: Conflicting keys Ctrl+Shift+C, Ctrl+Shift+X and Ctrl+Shift+B
             if (myInput.IsAnyShiftKeyPressed() && myInput.IsAnyCtrlKeyPressed())
             {
                 GetPressedKeys();
@@ -38,7 +38,9 @@ namespace ToolbarManager.Patches
                     return false;
                 }
             }
+            */
             
+            var myInput = MyInput.Static;
             if (myInput.IsNewKeyPressed(MyKeys.OemPipe))
             {
                 OpenCubeBuilder("");
