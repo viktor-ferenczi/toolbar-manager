@@ -51,23 +51,11 @@ namespace ToolbarManager.Logic
 
         public static Toolbar Read(string path)
         {
-            using (var stream = new StreamReader(path))
-                return Read(stream);
-        }
-
-        private static Toolbar Read(StreamReader stream)
-        {
-            MyObjectBuilderSerializer.DeserializeXML<MyObjectBuilder_Toolbar>(stream.BaseStream, out var toolbarBuilder);
+            MyObjectBuilderSerializer.DeserializeXML<MyObjectBuilder_Toolbar>(path, out var toolbarBuilder);
             return new Toolbar(toolbarBuilder);
         }
 
         public void Write(string path)
-        {
-            using (var stream = new StreamWriter(path))
-                Write(stream);
-        }
-
-        private void Write(StreamWriter stream)
         {
             var builder = new MyObjectBuilder_Toolbar
             {
@@ -83,7 +71,7 @@ namespace ToolbarManager.Logic
                 });
             }
 
-            MyObjectBuilderSerializer.SerializeXML(stream.BaseStream, builder);
+            MyObjectBuilderSerializer.SerializeXML(path, false, builder);
         }
 
         public void WriteJson(string path)
@@ -94,8 +82,10 @@ namespace ToolbarManager.Logic
 
         private void WriteJson(StreamWriter stream)
         {
-            var d = new JsonData();
-            d["ToolbarType"] = type.ToString();
+            var d = new JsonData
+            {
+                ["ToolbarType"] = type.ToString()
+            };
 
             var ss = new JsonData();
             ss.SetJsonType(JsonType.Array);
@@ -103,11 +93,13 @@ namespace ToolbarManager.Logic
 
             foreach (var slot in slots)
             {
-                var s = new JsonData();
-                s["Index"] = slot.Index;
-                s["Page"] = slot.Page;
-                s["Number"] = slot.Number;
-                s["IsEmpty"] = slot.IsEmpty;
+                var s = new JsonData
+                {
+                    ["Index"] = slot.Index,
+                    ["Page"] = slot.Page,
+                    ["Number"] = slot.Number,
+                    ["IsEmpty"] = slot.IsEmpty
+                };
 
                 if (slot.Builder == null)
                 {
