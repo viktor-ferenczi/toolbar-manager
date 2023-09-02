@@ -67,7 +67,7 @@ so they can be fast-tracked.
 
 ## Installation
 1. Exit from Space Engineers
-2. Install the [Plugin Loader](https://steamcommunity.com/sharedfiles/filedetails/?id=2407984968)
+2. Install the [Plugin Loader](https://github.com/sepluginloader/SpaceEngineersLauncher)
 3. Start Space Engineers
 4. Open the Plugins menu (should be in the Main Menu)
 5. Enable the Toolbar Manager plugin
