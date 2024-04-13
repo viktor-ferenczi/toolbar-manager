@@ -47,9 +47,7 @@ namespace ToolbarManager.Logic
             if (currentToolbar == null)
                 return;
 
-            var latestName = latestNames.GetValueOrDefault(currentToolbar.ToolbarType.ToString()) ?? "";
-
-            MyGuiSandbox.AddScreen(new NameDialog(OnNameSpecified, "Save character toolbar", latestName));
+            MyGuiSandbox.AddScreen(new NameDialog(OnNameSpecified, "Save character toolbar", ""));
         }
 
         private void OnNameSpecified(string name)
@@ -106,9 +104,7 @@ namespace ToolbarManager.Logic
             if (currentToolbar == null)
                 return;
 
-            var latestName = latestNames.GetValueOrDefault(currentToolbar.ToolbarType.ToString()) ?? "";
-
-            MyGuiSandbox.AddScreen(new ListDialog(OnItemSelected, "Load character toolbar", latestName, FormatDir(currentToolbar)));
+            MyGuiSandbox.AddScreen(new ListDialog(OnItemSelected, "Load character toolbar", "", FormatDir(currentToolbar)));
         }
 
         private void OnItemSelected(string name, bool merge)
@@ -116,8 +112,6 @@ namespace ToolbarManager.Logic
             var currentToolbar = MyToolbarComponent.CurrentToolbar;
             if (currentToolbar == null)
                 return;
-
-            latestNames[currentToolbar.ToolbarType.ToString()] = name;
 
             var path = FormatPath(currentToolbar, name);
 
