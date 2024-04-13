@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using LitJson;
 using Sandbox.Game.Screens.Helpers;
 using ToolbarManager.Extensions;
@@ -11,6 +11,9 @@ namespace ToolbarManager.Logic
 {
     public class ProfileStorage
     {
+        private const int NumberOfBackups = 5;
+        private const int DeleteOldBackupsOfDeletedProfilesAfterDays = 90;
+
         private static string PluginDataDir => Path.Combine(MyFileSystem.UserDataPath, "ToolbarManager");
 
         private readonly MyToolbar currentToolbar;
@@ -58,6 +61,9 @@ namespace ToolbarManager.Logic
 
             var xmlPath = FormatPath(name, "xml");
             toolbar.Write(xmlPath);
+
+            Backup(jsonPath);
+            Backup(xmlPath);
         }
 
         public void Load(string name, bool merge)
@@ -108,6 +114,9 @@ namespace ToolbarManager.Logic
 
             File.Move(oldXmlPath, newXmlPath);
             File.Move(oldJsonPath, newJsonPath);
+
+            RenameBackups(oldXmlPath, newXmlPath);
+            RenameBackups(oldJsonPath, newJsonPath);
         }
 
         public void Delete(string name)
@@ -120,6 +129,74 @@ namespace ToolbarManager.Logic
 
             if (File.Exists(jsonPath))
                 File.Delete(jsonPath);
+
+            DeleteOldBackupsOfDeletedProfiles();
+        }
+
+        private void Backup(string path)
+        {
+            for (var i = NumberOfBackups; i > 0; i--)
+            {
+                var olderPath = $"{path}.{i}";
+                var newerPath = $"{path}.{i - 1}";
+
+                if (File.Exists(olderPath))
+                    File.Delete(olderPath);
+
+                if (File.Exists(newerPath))
+                    File.Move(newerPath, olderPath);
+            }
+
+            File.Copy(path, $"{path}.0");
+        }
+
+        private void RenameBackups(string oldPath, string newPath)
+        {
+            for (var i = 0; i <= NumberOfBackups; i++)
+            {
+                var oldBackup = $"{oldPath}.{i}";
+                var newBackup = $"{newPath}.{i}";
+
+                if (File.Exists(newBackup))
+                {
+                    var overwritten = newBackup;
+                    for (var j = 0; j < 100; j++)
+                    {
+                        overwritten = $"{overwritten}.{i}";
+                        if (!File.Exists(overwritten))
+                        {
+                            File.Move(newBackup, overwritten);
+                            overwritten = null;
+                            break;
+                        }
+                    }
+                    if (overwritten != null)
+                        File.Delete(newBackup);
+                }
+
+                if (File.Exists(oldBackup))
+                    File.Move(oldBackup, newBackup);
+            }
+        }
+
+        private void DeleteOldBackupsOfDeletedProfiles()
+        {
+            var now = DateTime.Now;
+            foreach (var path in Directory.EnumerateFiles(profilesDir))
+            {
+                for (var i = 0; i <= NumberOfBackups; i++)
+                {
+                    if (!path.EndsWith($".{i}"))
+                        continue;
+
+                    var dt = File.GetLastWriteTime(path);
+                    if ((now - dt).Days < DeleteOldBackupsOfDeletedProfilesAfterDays)
+                        continue;
+
+                    File.Delete(path);
+                    break;
+                }
+            }
         }
     }
 }

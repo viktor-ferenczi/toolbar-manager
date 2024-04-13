@@ -92,6 +92,9 @@ namespace ToolbarManager.Gui
 
         private bool Load(string name, bool merge)
         {
+            if (name == null)
+                return false;
+
             try
             {
                 storage.Load(name, merge);
@@ -107,7 +110,7 @@ namespace ToolbarManager.Gui
 
         private void UpdateButtons()
         {
-            var isProfileSelected = profilesTable.SelectedRowIndex != null && profilesTable.SelectedRow.UserData != null;
+            var isProfileSelected = profilesTable.SelectedRowIndex != null && profilesTable.SelectedRow?.UserData != null;
 
             newButton.Visible = !isProfileSelected;
             updateButton.Visible = isProfileSelected;
