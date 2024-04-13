@@ -4,10 +4,8 @@ using System.Text;
 using LitJson;
 using Sandbox;
 using Sandbox.Game.Gui;
-using Sandbox.Game.Localization;
 using Sandbox.Graphics.GUI;
 using ToolbarManager.Extensions;
-using VRage;
 using VRage.Game;
 using VRage.Utils;
 using VRageMath;
@@ -164,6 +162,49 @@ namespace ToolbarManager.Gui
             Controls.Add(closeButton);
         }
 
+        private void OnNew(MyGuiControlButton button)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void OnLoad(MyGuiControlButton button)
+        {
+            ReturnLoad();
+        }
+
+        private void OnMerge(MyGuiControlButton button)
+        {
+            CallResultCallback(SelectedName, true);
+            CloseScreen();
+        }
+
+        private void OnRename(MyGuiControlButton _)
+        {
+            var oldName = SelectedName;
+            if (oldName == "")
+                return;
+
+            MyGuiSandbox.AddScreen(new NameDialog(newName => OnNewNameSpecified(oldName, newName), "Rename saved toolbar", oldName));
+        }
+
+        private void OnDelete(MyGuiControlButton _)
+        {
+            var name = SelectedName;
+            if (name == "")
+                return;
+
+            MyGuiSandbox.AddScreen(
+                MyGuiSandbox.CreateMessageBox(buttonType: MyMessageBoxButtonsType.YES_NO,
+                    messageText: new StringBuilder($"Are you sure to delete this saved toolbar?\r\n\r\n{name}"),
+                    messageCaption: new StringBuilder("Confirmation"),
+                    callback: result => OnDeleteForSure(result, name)));
+        }
+
+        private void OnClose(MyGuiControlButton button)
+        {
+            CloseScreen();
+        }
+
         private void ListFiles()
         {
             foreach (var path in Directory.EnumerateFiles(dirPath))
@@ -234,7 +275,7 @@ namespace ToolbarManager.Gui
                     var page = i / 9;
                     if (page > 8)
                         break;
-                    if (!(bool)slots[i]["IsEmpty"])
+                    if (!(bool) slots[i]["IsEmpty"])
                         usedSlotCounts[page]++;
                 }
             }
@@ -263,26 +304,7 @@ namespace ToolbarManager.Gui
             CloseScreen();
         }
 
-        private void ReturnMerge()
-        {
-            CallResultCallback(SelectedName, true);
-            CloseScreen();
-        }
-
         private string SelectedName => toolbarTable.SelectedRow?.GetCell(0)?.Text?.ToString() ?? "";
-
-        private void OnNewOrLoad(MyGuiControlButton button) => ReturnLoad();
-        private void OnMerge(MyGuiControlButton button) => ReturnMerge();
-        private void OnClose(MyGuiControlButton button) => CloseScreen();
-
-        private void OnRename(MyGuiControlButton _)
-        {
-            var oldName = SelectedName;
-            if (oldName == "")
-                return;
-
-            MyGuiSandbox.AddScreen(new NameDialog(newName => OnNewNameSpecified(oldName, newName), "Rename saved toolbar", oldName));
-        }
 
         private void OnNewNameSpecified(string oldName, string newName)
         {
@@ -335,19 +357,6 @@ namespace ToolbarManager.Gui
                 sb.Clear();
                 sb.Append(newName);
             }
-        }
-
-        private void OnDelete(MyGuiControlButton _)
-        {
-            var name = SelectedName;
-            if (name == "")
-                return;
-
-            MyGuiSandbox.AddScreen(
-                MyGuiSandbox.CreateMessageBox(buttonType: MyMessageBoxButtonsType.YES_NO,
-                    messageText: new StringBuilder($"Are you sure to delete this saved toolbar?\r\n\r\n{name}"),
-                    messageCaption: new StringBuilder("Confirmation"),
-                    callback: result => OnDeleteForSure(result, name)));
         }
 
         private void OnDeleteForSure(MyGuiScreenMessageBox.ResultEnum result, string name)
