@@ -1,8 +1,8 @@
-using System;
 using HarmonyLib;
 using Sandbox.Game.Gui;
 using Sandbox.Game.Screens.Helpers;
 using Sandbox.Graphics.GUI;
+using ToolbarManager.Gui;
 using VRage.Game;
 using VRageMath;
 
@@ -14,8 +14,6 @@ namespace ToolbarManager.Patches
     [HarmonyPatch(typeof(MyGuiScreenToolbarConfigBase))]
     public static class MyGuiScreenToolbarConfigBasePatch
     {
-        public static event Action OnProfilesClicked;
-
         [HarmonyPostfix]
         [HarmonyPatch(nameof(MyGuiScreenToolbarConfigBase.RecreateControls))]
         private static void RecreateControlsPostfix(MyGuiScreenToolbarConfigBase __instance)
@@ -32,10 +30,16 @@ namespace ToolbarManager.Patches
 
             button.SetToolTip("Open Toolbar Manager");
 
-            button.ButtonClicked += _ => OnProfilesClicked?.Invoke();
+            button.ButtonClicked += OpenProfilesScreen;
             button.Enabled = toolbarType != null && toolbarType != MyToolbarType.None;
 
             __instance.Elements.Add(button);
+        }
+
+        private static void OpenProfilesScreen(MyGuiControlButton obj)
+        {
+            var toolbarType = MyToolbarComponent.CurrentToolbar?.ToolbarType;
+            MyGuiSandbox.AddScreen(new ProfilesDialog(toolbarType));
         }
     }
 }

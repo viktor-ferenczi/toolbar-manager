@@ -6,6 +6,7 @@ using Sandbox;
 using Sandbox.Game.Gui;
 using Sandbox.Graphics.GUI;
 using ToolbarManager.Extensions;
+using ToolbarManager.Logic;
 using VRage.Game;
 using VRage.Utils;
 using VRageMath;
@@ -14,39 +15,33 @@ using VRageMath;
 namespace ToolbarManager.Gui
 {
     // ReSharper disable VirtualMemberCallInConstructor
-    public class ListDialog : MyGuiScreenDebugBase
+    public class ProfilesDialog : MyGuiScreenDebugBase
     {
         private MyGuiControlTable profilesTable;
         private MyGuiControlButton newButton, updateButton, loadButton, mergeButton, renameButton, deleteButton, closeButton;
 
-        private readonly Action<string, bool> callBack;
-        private readonly string caption;
-        private readonly string dirPath;
         private readonly int[] usedSlotCounts = new int[9];
+        private readonly string dataDir;
 
-        public ListDialog(Action<string, bool> callBack,
-            string caption,
-            string dirPath)
+        public override string GetFriendlyName() => "ProfilesDialog";
+
+        public ProfilesDialog(MyToolbarType? toolbarType)
             : base(new Vector2(0.5f, 0.5f), new Vector2(1f, 0.8f), MyGuiConstants.SCREEN_BACKGROUND_COLOR * MySandboxGame.Config.UIBkOpacity, true)
         {
-            this.callBack = callBack;
-            this.caption = caption;
-            this.dirPath = dirPath;
+            dataDir = Path.Combine(Storage.UserDataDir, toolbarType.ToString());
 
             RecreateControls(true);
 
             CanBeHidden = true;
             CanHideOthers = true;
             CloseButtonEnabled = true;
-
-            m_onEnterCallback = ReturnLoad;
         }
 
         public override void RecreateControls(bool constructor)
         {
             base.RecreateControls(constructor);
 
-            AddCaption(caption, Color.White.ToVector4(), new Vector2(0.0f, 0.003f));
+            AddCaption("Toolbar Manager", Color.White.ToVector4(), new Vector2(0.0f, 0.003f));
 
             CreateTable();
             CreateButtons();
@@ -89,16 +84,21 @@ namespace ToolbarManager.Gui
 
         private void OnItemDoubleClicked(MyGuiControlTable table, MyGuiControlTable.EventArgs args)
         {
-            ReturnLoad();
+            if (Storage.Load(SelectedName, false))
+                CloseScreen();
         }
 
         private void UpdateButtons()
         {
-
             var isProfileSelected = profilesTable.SelectedRowIndex != null && profilesTable.SelectedRow.UserData != null;
 
             newButton.Visible = !isProfileSelected;
             updateButton.Visible = isProfileSelected;
+
+            loadButton.Enabled = isProfileSelected;
+            mergeButton.Enabled = isProfileSelected;
+            renameButton.Enabled = isProfileSelected;
+            deleteButton.Enabled = isProfileSelected;
         }
 
         private int CellTextComparison(MyGuiControlTable.Cell x, MyGuiControlTable.Cell y)
@@ -173,21 +173,13 @@ namespace ToolbarManager.Gui
             deleteButton.Position = new Vector2(++i * s + x, y);
             closeButton.Position = new Vector2(++i * s + x, y);
 
-            newButton.SetMaxWidth(0.04f);
-            updateButton.SetMaxWidth(0.08f);
-            loadButton.SetMaxWidth(0.08f);
-            mergeButton.SetMaxWidth(0.08f);
-            renameButton.SetMaxWidth(0.08f);
-            deleteButton.SetMaxWidth(0.08f);
-            closeButton.SetMaxWidth(0.08f);
-
-            newButton.SetToolTip("Saves the current toolbar as a new profile");
-            updateButton.SetToolTip("Updates the selected profile with the current toolbar");
-            loadButton.SetToolTip("Loads the selected profile replacing the current toolbar");
-            mergeButton.SetToolTip("Merges the selected profile into the current toolbar");
-            renameButton.SetToolTip("Renames the selected profile");
-            deleteButton.SetToolTip("Deletes the selected profile");
-            closeButton.SetToolTip("Closes the dialog with no further changes");
+            newButton.SetToolTip("Save the current toolbar as a new profile");
+            updateButton.SetToolTip("Update the selected profile with the current toolbar");
+            loadButton.SetToolTip("Load the selected profile replacing the current toolbar");
+            mergeButton.SetToolTip("Merge the selected profile into the current toolbar");
+            renameButton.SetToolTip("Rename the selected profile");
+            deleteButton.SetToolTip("Delete the selected profile");
+            closeButton.SetToolTip("Close the dialog with no further changes");
 
             Controls.Add(newButton);
             Controls.Add(updateButton);
@@ -202,23 +194,32 @@ namespace ToolbarManager.Gui
 
         private void OnNew(MyGuiControlButton button)
         {
-            // Storage.OnSaveToolbar();
+            var name = Storage.Save();
+            AddTableRows();
+            if (name != null)
+            {
+                SelectByName(name);
+            }
         }
 
         private void OnUpdate(MyGuiControlButton obj)
         {
-            // Storage.OnSaveToolbar();
+            var name = SelectedName;
+            Storage.Save(name);
+            AddTableRows();
+            SelectByName(name);
         }
 
         private void OnLoad(MyGuiControlButton button)
         {
-            ReturnLoad();
+            if (Storage.Load(SelectedName, false))
+                CloseScreen();
         }
 
         private void OnMerge(MyGuiControlButton button)
         {
-            CallResultCallback(SelectedName, true);
-            CloseScreen();
+            if (Storage.Load(SelectedName, true))
+                CloseScreen();
         }
 
         private void OnRename(MyGuiControlButton _)
@@ -250,7 +251,9 @@ namespace ToolbarManager.Gui
 
         private void AddTableRows()
         {
-            foreach (var path in Directory.EnumerateFiles(dirPath))
+            profilesTable.Clear();
+
+            foreach (var path in Directory.EnumerateFiles(dataDir))
             {
                 if (!path.EndsWith(".xml"))
                     continue;
@@ -270,10 +273,13 @@ namespace ToolbarManager.Gui
             var fileName = Path.GetFileName(path);
             var name = fileName.Substring(0, fileName.Length - 4);
 
-            var row = new MyGuiControlTable.Row(path);
+            var row = new MyGuiControlTable.Row(name);
+
             row.AddCell(new MyGuiControlTable.Cell(name));
+
             for (var i = 0; i < 9; i++)
                 row.AddCell(new MyGuiControlTable.Cell(usedSlotCounts[i] > 0 ? $"{usedSlotCounts[i]}" : "-"));
+
             profilesTable.Add(row);
         }
 
@@ -328,48 +334,32 @@ namespace ToolbarManager.Gui
             }
         }
 
-        private void CallResultCallback(string text, bool merge)
-        {
-            if (text == null)
-                return;
-
-            callBack(text, merge);
-        }
-
-        private void ReturnLoad()
-        {
-            CallResultCallback(SelectedName, false);
-            CloseScreen();
-        }
-
-        private string SelectedName => profilesTable.SelectedRow?.GetCell(0)?.Text?.ToString() ?? "";
-
         private void OnNewNameSpecified(string oldName, string newName)
         {
             newName = PathExt.SanitizeFileName(newName);
 
-            var newPath = Path.Combine(dirPath, $"{newName}.xml");
+            var newPath = Path.Combine(dataDir, $"{newName}.xml");
             if (File.Exists(newPath))
             {
                 MyGuiSandbox.AddScreen(
                     MyGuiSandbox.CreateMessageBox(buttonType: MyMessageBoxButtonsType.YES_NO,
                         messageText: new StringBuilder($"Are you sure to overwrite this saved toolbar?\r\n\r\n{newName}"),
                         messageCaption: new StringBuilder("Confirmation"),
-                        callback: result => OnOverwriteForSure(result, oldName, newName)));
+                        callback: result => OnRenameOverwriteForSure(result, oldName, newName)));
             }
             else
             {
-                OnOverwriteForSure(MyGuiScreenMessageBox.ResultEnum.YES, oldName, newName);
+                OnRenameOverwriteForSure(MyGuiScreenMessageBox.ResultEnum.YES, oldName, newName);
             }
         }
 
-        private void OnOverwriteForSure(MyGuiScreenMessageBox.ResultEnum result, string oldName, string newName)
+        private void OnRenameOverwriteForSure(MyGuiScreenMessageBox.ResultEnum result, string oldName, string newName)
         {
             if (result != MyGuiScreenMessageBox.ResultEnum.YES)
                 return;
 
-            var oldPath = Path.Combine(dirPath, $"{oldName}.xml");
-            var newPath = Path.Combine(dirPath, $"{newName}.xml");
+            var oldPath = Path.Combine(dataDir, $"{oldName}.xml");
+            var newPath = Path.Combine(dataDir, $"{newName}.xml");
 
             var oldJsonPath = XmlToJsonPath(oldPath);
             var newJsonPath = XmlToJsonPath(newPath);
@@ -386,15 +376,7 @@ namespace ToolbarManager.Gui
             if (File.Exists(oldJsonPath))
                 File.Move(oldJsonPath, newJsonPath);
 
-            if (TryFindListItem(newName, out var overwrittenItemIndex))
-                profilesTable.Remove(profilesTable.GetRow(overwrittenItemIndex));
-
-            if (TryFindListItem(oldName, out var renamedItemIndex))
-            {
-                var sb = profilesTable.GetRow(renamedItemIndex).GetCell(0).Text;
-                sb.Clear();
-                sb.Append(newName);
-            }
+            AddTableRows();
         }
 
         private void OnDeleteForSure(MyGuiScreenMessageBox.ResultEnum result, string name)
@@ -402,7 +384,7 @@ namespace ToolbarManager.Gui
             if (result != MyGuiScreenMessageBox.ResultEnum.YES)
                 return;
 
-            var path = Path.Combine(dirPath, $"{name}.xml");
+            var path = Path.Combine(dataDir, $"{name}.xml");
             var jsonPath = XmlToJsonPath(path);
 
             if (File.Exists(path))
@@ -420,7 +402,7 @@ namespace ToolbarManager.Gui
             var count = profilesTable.RowsCount;
             for (index = 0; index < count; index++)
             {
-                if (profilesTable.GetRow(index).GetCell(0).Text.ToString() == name)
+                if (profilesTable.UserData is string s && s == name)
                     return true;
             }
 
@@ -428,6 +410,15 @@ namespace ToolbarManager.Gui
             return false;
         }
 
-        public override string GetFriendlyName() => "ListDialog";
+        private string SelectedName => profilesTable.SelectedRow?.UserData as string;
+
+        private void SelectByName(string name)
+        {
+            if (!TryFindListItem(name, out var i))
+                return;
+
+            profilesTable.SelectedRowIndex = i;
+            UpdateButtons();
+        }
     }
 }

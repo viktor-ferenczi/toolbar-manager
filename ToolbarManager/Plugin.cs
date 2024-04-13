@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using HarmonyLib;
-using ToolbarManager.Logic;
 using VRage.Plugins;
 
 namespace ToolbarManager
@@ -9,13 +8,6 @@ namespace ToolbarManager
     // ReSharper disable once UnusedType.Global
     public class Plugin : IPlugin
     {
-        private static bool initialized;
-        private static Storage storage;
-
-        public void Dispose()
-        {
-        }
-
         public void Init(object gameInstance)
         {
             var harmony = new Harmony("ToolbarManager");
@@ -24,12 +16,10 @@ namespace ToolbarManager
 
         public void Update()
         {
-            if (initialized)
-                return;
+        }
 
-            storage = new Storage();
-
-            initialized = true;
+        public void Dispose()
+        {
         }
     }
 }
