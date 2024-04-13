@@ -24,11 +24,13 @@ namespace ToolbarManager.Patches
 
             var button = new MyGuiControlButton
             {
-                Text = "Profiles",
-                Name = "ToolbarProfilesButton",
-                VisualStyle = MyGuiControlButtonStyleEnum.Small,
-                Position = new Vector2(-0.45f, 0.435f)
+                Text = "TM",
+                Name = "OpenToolbarManagerButton",
+                VisualStyle = MyGuiControlButtonStyleEnum.Square,
+                Position = new Vector2(-0.45f, 0.425f)
             };
+
+            button.SetToolTip("Open Toolbar Manager");
 
             button.ButtonClicked += _ => OnProfilesClicked?.Invoke();
             button.Enabled = toolbarType != null && toolbarType != MyToolbarType.None;

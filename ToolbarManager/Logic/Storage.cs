@@ -98,7 +98,7 @@ namespace ToolbarManager.Logic
             if (currentToolbar == null)
                 return;
 
-            MyGuiSandbox.AddScreen(new ListDialog(OnItemSelected, "Load character toolbar", "", FormatDir(currentToolbar)));
+            MyGuiSandbox.AddScreen(new ListDialog(OnItemSelected, "Toolbar Manager", FormatDir(currentToolbar)));
         }
 
         private void OnItemSelected(string name, bool merge)

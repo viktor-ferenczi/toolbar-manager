@@ -16,31 +16,21 @@ namespace ToolbarManager.Gui
     // ReSharper disable VirtualMemberCallInConstructor
     public class ListDialog : MyGuiScreenDebugBase
     {
-        private MyGuiControlTable toolbarTable;
-        private MyGuiControlButton newButton;
-        private MyGuiControlButton updateButton;
-        private MyGuiControlButton loadButton;
-        private MyGuiControlButton mergeButton;
-        private MyGuiControlButton renameButton;
-        private MyGuiControlButton deleteButton;
-        private MyGuiControlButton closeButton;
+        private MyGuiControlTable profilesTable;
+        private MyGuiControlButton newButton, updateButton, loadButton, mergeButton, renameButton, deleteButton, closeButton;
 
         private readonly Action<string, bool> callBack;
         private readonly string caption;
-        private readonly string defaultName;
         private readonly string dirPath;
         private readonly int[] usedSlotCounts = new int[9];
 
-        public ListDialog(
-            Action<string, bool> callBack,
+        public ListDialog(Action<string, bool> callBack,
             string caption,
-            string defaultName,
             string dirPath)
             : base(new Vector2(0.5f, 0.5f), new Vector2(1f, 0.8f), MyGuiConstants.SCREEN_BACKGROUND_COLOR * MySandboxGame.Config.UIBkOpacity, true)
         {
             this.callBack = callBack;
             this.caption = caption;
-            this.defaultName = defaultName;
             this.dirPath = dirPath;
 
             RecreateControls(true);
@@ -58,34 +48,57 @@ namespace ToolbarManager.Gui
 
             AddCaption(caption, Color.White.ToVector4(), new Vector2(0.0f, 0.003f));
 
-            CreateListBox();
+            CreateTable();
             CreateButtons();
         }
 
         private Vector2 DialogSize => m_size ?? Vector2.One;
 
-        private void CreateListBox()
+        private void CreateTable()
         {
-            toolbarTable = new MyGuiControlTable
+            profilesTable = new MyGuiControlTable
             {
-                Position = new Vector2(0.001f, -0.5f * DialogSize.Y + 0.1f),
-                Size = new Vector2(0.85f * DialogSize.X, DialogSize.Y - 0.25f),
+                Position = new Vector2(0.001f, -0.5f * DialogSize.Y + 0.08f),
+                Size = new Vector2(0.9f * DialogSize.X, DialogSize.Y - 0.1f),
                 OriginAlign = MyGuiDrawAlignEnum.HORISONTAL_CENTER_AND_VERTICAL_TOP,
                 ColumnsCount = 10,
-                VisibleRowsCount = 15,
+                VisibleRowsCount = 17,
             };
 
             var q = 0.76f;
             var w = 0.22f / 9f;
-            toolbarTable.SetCustomColumnWidths(new[] { q, w, w, w, w, w, w, w, w, w });
-            toolbarTable.SetColumnName(0, new StringBuilder("Name"));
-            toolbarTable.SetColumnComparison(0, CellTextComparison);
+            profilesTable.SetCustomColumnWidths(new[] { q, w, w, w, w, w, w, w, w, w });
+            profilesTable.SetColumnName(0, new StringBuilder("Name"));
+            profilesTable.SetColumnComparison(0, CellTextComparison);
             for (var i = 1; i < 10; i++)
-                toolbarTable.SetColumnName(i, new StringBuilder($"{i}"));
-            toolbarTable.SortByColumn(0);
-            ListFiles();
-            toolbarTable.ItemDoubleClicked += OnItemDoubleClicked;
-            Controls.Add(toolbarTable);
+                profilesTable.SetColumnName(i, new StringBuilder($"{i}"));
+            profilesTable.SortByColumn(0);
+
+            AddTableRows();
+
+            profilesTable.ItemSelected += OnItemSelected;
+            profilesTable.ItemDoubleClicked += OnItemDoubleClicked;
+
+            Controls.Add(profilesTable);
+        }
+
+        private void OnItemSelected(MyGuiControlTable table, MyGuiControlTable.EventArgs args)
+        {
+            UpdateButtons();
+        }
+
+        private void OnItemDoubleClicked(MyGuiControlTable table, MyGuiControlTable.EventArgs args)
+        {
+            ReturnLoad();
+        }
+
+        private void UpdateButtons()
+        {
+
+            var isProfileSelected = profilesTable.SelectedRowIndex != null && profilesTable.SelectedRow.UserData != null;
+
+            newButton.Visible = !isProfileSelected;
+            updateButton.Visible = isProfileSelected;
         }
 
         private int CellTextComparison(MyGuiControlTable.Cell x, MyGuiControlTable.Cell y)
@@ -145,15 +158,28 @@ namespace ToolbarManager.Gui
                 text: new StringBuilder("Close"),
                 onButtonClick: OnClose);
 
-            var xs = 0.85f * DialogSize.X;
             var y = 0.5f * (DialogSize.Y - 0.15f);
-            newButton.Position = new Vector2(-0.39f * xs, y);
-            updateButton.Position = new Vector2(-0.39f * xs, y);
-            loadButton.Position = new Vector2(-0.16f * xs, y);
-            mergeButton.Position = new Vector2(0.06f * xs, y);
-            renameButton.Position = new Vector2(0.24f * xs, y);
-            deleteButton.Position = new Vector2(0.42f * xs, y);
-            closeButton.Position = new Vector2(0.64f * xs, y);
+
+            var w = 0.85f * DialogSize.X;
+            var s = w / 6f;
+            var x = -2.5f * s;
+            var i = 0;
+
+            newButton.Position = new Vector2(x, y);
+            updateButton.Position = new Vector2(x, y);
+            loadButton.Position = new Vector2(++i * s + x, y);
+            mergeButton.Position = new Vector2(++i * s + x, y);
+            renameButton.Position = new Vector2(++i * s + x, y);
+            deleteButton.Position = new Vector2(++i * s + x, y);
+            closeButton.Position = new Vector2(++i * s + x, y);
+
+            newButton.SetMaxWidth(0.04f);
+            updateButton.SetMaxWidth(0.08f);
+            loadButton.SetMaxWidth(0.08f);
+            mergeButton.SetMaxWidth(0.08f);
+            renameButton.SetMaxWidth(0.08f);
+            deleteButton.SetMaxWidth(0.08f);
+            closeButton.SetMaxWidth(0.08f);
 
             newButton.SetToolTip("Saves the current toolbar as a new profile");
             updateButton.SetToolTip("Updates the selected profile with the current toolbar");
@@ -170,6 +196,8 @@ namespace ToolbarManager.Gui
             Controls.Add(renameButton);
             Controls.Add(deleteButton);
             Controls.Add(closeButton);
+
+            UpdateButtons();
         }
 
         private void OnNew(MyGuiControlButton button)
@@ -220,7 +248,7 @@ namespace ToolbarManager.Gui
             CloseScreen();
         }
 
-        private void ListFiles()
+        private void AddTableRows()
         {
             foreach (var path in Directory.EnumerateFiles(dirPath))
             {
@@ -230,10 +258,8 @@ namespace ToolbarManager.Gui
                 AddRowForFile(path);
             }
 
-            toolbarTable.SelectedRowIndex = TryFindListItem(defaultName, out var index) ? (int?) index : null;
-
-            newButton.Visible = toolbarTable.SelectedRowIndex == null;
-            updateButton.Visible = toolbarTable.SelectedRowIndex != null;
+            profilesTable.Add(new MyGuiControlTable.Row());
+            profilesTable.SelectedRowIndex = profilesTable.Rows.Count - 1;
         }
 
         private void AddRowForFile(string path)
@@ -248,7 +274,7 @@ namespace ToolbarManager.Gui
             row.AddCell(new MyGuiControlTable.Cell(name));
             for (var i = 0; i < 9; i++)
                 row.AddCell(new MyGuiControlTable.Cell(usedSlotCounts[i] > 0 ? $"{usedSlotCounts[i]}" : "-"));
-            toolbarTable.Add(row);
+            profilesTable.Add(row);
         }
 
         private static JsonData ReadJson(string xmlPath)
@@ -302,11 +328,6 @@ namespace ToolbarManager.Gui
             }
         }
 
-        private void OnItemDoubleClicked(MyGuiControlTable table, MyGuiControlTable.EventArgs args)
-        {
-            ReturnLoad();
-        }
-
         private void CallResultCallback(string text, bool merge)
         {
             if (text == null)
@@ -321,7 +342,7 @@ namespace ToolbarManager.Gui
             CloseScreen();
         }
 
-        private string SelectedName => toolbarTable.SelectedRow?.GetCell(0)?.Text?.ToString() ?? "";
+        private string SelectedName => profilesTable.SelectedRow?.GetCell(0)?.Text?.ToString() ?? "";
 
         private void OnNewNameSpecified(string oldName, string newName)
         {
@@ -366,11 +387,11 @@ namespace ToolbarManager.Gui
                 File.Move(oldJsonPath, newJsonPath);
 
             if (TryFindListItem(newName, out var overwrittenItemIndex))
-                toolbarTable.Remove(toolbarTable.GetRow(overwrittenItemIndex));
+                profilesTable.Remove(profilesTable.GetRow(overwrittenItemIndex));
 
             if (TryFindListItem(oldName, out var renamedItemIndex))
             {
-                var sb = toolbarTable.GetRow(renamedItemIndex).GetCell(0).Text;
+                var sb = profilesTable.GetRow(renamedItemIndex).GetCell(0).Text;
                 sb.Clear();
                 sb.Append(newName);
             }
@@ -391,15 +412,15 @@ namespace ToolbarManager.Gui
                 File.Delete(jsonPath);
 
             if (TryFindListItem(name, out var index))
-                toolbarTable.Remove(toolbarTable.GetRow(index));
+                profilesTable.Remove(profilesTable.GetRow(index));
         }
 
         private bool TryFindListItem(string name, out int index)
         {
-            var count = toolbarTable.RowsCount;
+            var count = profilesTable.RowsCount;
             for (index = 0; index < count; index++)
             {
-                if (toolbarTable.GetRow(index).GetCell(0).Text.ToString() == name)
+                if (profilesTable.GetRow(index).GetCell(0).Text.ToString() == name)
                     return true;
             }
 
