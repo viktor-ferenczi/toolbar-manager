@@ -215,9 +215,11 @@ namespace ToolbarManager.Gui
         private void OnUpdate(MyGuiControlButton obj)
         {
             var name = SelectedName;
-            SaveAsNewProfile(name);
-            RefreshTableRows();
-            SelectRowByName(name);
+            MyGuiSandbox.AddScreen(
+                MyGuiSandbox.CreateMessageBox(buttonType: MyMessageBoxButtonsType.YES_NO,
+                    messageText: new StringBuilder($"Are you sure to update this saved toolbar?\r\n\r\n{name}"),
+                    messageCaption: new StringBuilder("Confirmation"),
+                    callback: result => OnSaveConfirmation(result, name)));
         }
 
         private void OnLoad(MyGuiControlButton button)
@@ -333,15 +335,15 @@ namespace ToolbarManager.Gui
                     MyGuiSandbox.CreateMessageBox(buttonType: MyMessageBoxButtonsType.YES_NO,
                         messageText: new StringBuilder($"Are you sure to overwrite this saved toolbar?\r\n\r\n{newName}"),
                         messageCaption: new StringBuilder("Confirmation"),
-                        callback: result => OnRenameOverwriteForSure(result, oldName, newName)));
+                        callback: result => OnRenameConfirmation(result, oldName, newName)));
             }
             else
             {
-                OnRenameOverwriteForSure(MyGuiScreenMessageBox.ResultEnum.YES, oldName, newName);
+                OnRenameConfirmation(MyGuiScreenMessageBox.ResultEnum.YES, oldName, newName);
             }
         }
 
-        private void OnRenameOverwriteForSure(MyGuiScreenMessageBox.ResultEnum result, string oldName, string newName)
+        private void OnRenameConfirmation(MyGuiScreenMessageBox.ResultEnum result, string oldName, string newName)
         {
             if (result != MyGuiScreenMessageBox.ResultEnum.YES)
                 return;
@@ -373,15 +375,15 @@ namespace ToolbarManager.Gui
                     MyGuiSandbox.CreateMessageBox(buttonType: MyMessageBoxButtonsType.YES_NO,
                         messageText: new StringBuilder($"Are you sure to overwrite this saved toolbar?\r\n\r\n{name}"),
                         messageCaption: new StringBuilder("Confirmation"),
-                        callback: result => OnSaveOverwriteForSure(result, name)));
+                        callback: result => OnSaveConfirmation(result, name)));
             }
             else
             {
-                OnSaveOverwriteForSure(MyGuiScreenMessageBox.ResultEnum.YES, name);
+                OnSaveConfirmation(MyGuiScreenMessageBox.ResultEnum.YES, name);
             }
         }
 
-        private void OnSaveOverwriteForSure(MyGuiScreenMessageBox.ResultEnum result, string name)
+        private void OnSaveConfirmation(MyGuiScreenMessageBox.ResultEnum result, string name)
         {
             if (result != MyGuiScreenMessageBox.ResultEnum.YES)
                 return;
