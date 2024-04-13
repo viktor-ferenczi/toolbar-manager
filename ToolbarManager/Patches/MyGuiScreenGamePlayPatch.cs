@@ -16,9 +16,10 @@ namespace ToolbarManager.Patches
     // ReSharper disable once UnusedType.Global
     public static class MyGuiScreenGamePlayPatch
     {
+#if DISABLED
         private static readonly List<MyKeys> PressedKeys = new List<MyKeys>();
-
         private static readonly StringBuilder MatchingKeys = new StringBuilder();
+#endif
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(MyGuiScreenGamePlay.HandleUnhandledInput))]

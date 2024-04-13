@@ -38,8 +38,9 @@ namespace ToolbarManager.Patches
 
         private static void OpenProfilesScreen(MyGuiControlButton obj)
         {
-            var toolbarType = MyToolbarComponent.CurrentToolbar?.ToolbarType;
-            MyGuiSandbox.AddScreen(new ProfilesDialog(toolbarType));
+            var currentToolbar = MyToolbarComponent.CurrentToolbar;
+            if (currentToolbar != null)
+                MyGuiSandbox.AddScreen(new ProfilesDialog(currentToolbar));
         }
     }
 }

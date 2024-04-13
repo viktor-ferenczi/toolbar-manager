@@ -1,9 +1,9 @@
 using System;
-using System.IO;
 using System.Text;
 using LitJson;
 using Sandbox;
 using Sandbox.Game.Gui;
+using Sandbox.Game.Screens.Helpers;
 using Sandbox.Graphics.GUI;
 using ToolbarManager.Extensions;
 using ToolbarManager.Logic;
@@ -19,16 +19,15 @@ namespace ToolbarManager.Gui
     {
         private MyGuiControlTable profilesTable;
         private MyGuiControlButton newButton, updateButton, loadButton, mergeButton, renameButton, deleteButton, closeButton;
-
         private readonly int[] usedSlotCounts = new int[9];
-        private readonly string dataDir;
+        private readonly ProfileStorage storage;
 
         public override string GetFriendlyName() => "ProfilesDialog";
 
-        public ProfilesDialog(MyToolbarType? toolbarType)
+        public ProfilesDialog(MyToolbar currentToolbar)
             : base(new Vector2(0.5f, 0.5f), new Vector2(1f, 0.8f), MyGuiConstants.SCREEN_BACKGROUND_COLOR * MySandboxGame.Config.UIBkOpacity, true)
         {
-            dataDir = Path.Combine(Storage.UserDataDir, toolbarType.ToString());
+            storage = new ProfileStorage(currentToolbar);
 
             RecreateControls(true);
 
@@ -43,8 +42,8 @@ namespace ToolbarManager.Gui
 
             AddCaption("Toolbar Manager", Color.White.ToVector4(), new Vector2(0.0f, 0.003f));
 
-            CreateTable();
             CreateButtons();
+            CreateTable();
         }
 
         private Vector2 DialogSize => m_size ?? Vector2.One;
@@ -69,7 +68,7 @@ namespace ToolbarManager.Gui
                 profilesTable.SetColumnName(i, new StringBuilder($"{i}"));
             profilesTable.SortByColumn(0);
 
-            AddTableRows();
+            RefreshTableRows();
 
             profilesTable.ItemSelected += OnItemSelected;
             profilesTable.ItemDoubleClicked += OnItemDoubleClicked;
@@ -84,8 +83,26 @@ namespace ToolbarManager.Gui
 
         private void OnItemDoubleClicked(MyGuiControlTable table, MyGuiControlTable.EventArgs args)
         {
-            if (Storage.Load(SelectedName, false))
+            var name = SelectedName;
+            if (Load(name, false))
+            {
                 CloseScreen();
+            }
+        }
+
+        private bool Load(string name, bool merge)
+        {
+            try
+            {
+                storage.Load(name, merge);
+            }
+            catch (Exception e)
+            {
+                MyLog.Default.Error($"ToolbarManager: Failed to load toolbar \"{{name}}\": {e}");
+                MyGuiSandboxExt.Show("Failed to load toolbar", "Error");
+                return false;
+            }
+            return true;
         }
 
         private void UpdateButtons()
@@ -188,37 +205,30 @@ namespace ToolbarManager.Gui
             Controls.Add(renameButton);
             Controls.Add(deleteButton);
             Controls.Add(closeButton);
-
-            UpdateButtons();
         }
 
         private void OnNew(MyGuiControlButton button)
         {
-            var name = Storage.Save();
-            AddTableRows();
-            if (name != null)
-            {
-                SelectByName(name);
-            }
+            MyGuiSandbox.AddScreen(new NameDialog(SaveAsNewProfile, "Save toolbar", ""));
         }
 
         private void OnUpdate(MyGuiControlButton obj)
         {
             var name = SelectedName;
-            Storage.Save(name);
-            AddTableRows();
-            SelectByName(name);
+            SaveAsNewProfile(name);
+            RefreshTableRows();
+            SelectRowByName(name);
         }
 
         private void OnLoad(MyGuiControlButton button)
         {
-            if (Storage.Load(SelectedName, false))
+            if (Load(SelectedName, false))
                 CloseScreen();
         }
 
         private void OnMerge(MyGuiControlButton button)
         {
-            if (Storage.Load(SelectedName, true))
+            if (Load(SelectedName, true))
                 CloseScreen();
         }
 
@@ -249,29 +259,33 @@ namespace ToolbarManager.Gui
             CloseScreen();
         }
 
-        private void AddTableRows()
+        private void RefreshTableRows()
         {
             profilesTable.Clear();
 
-            foreach (var path in Directory.EnumerateFiles(dataDir))
+            foreach (var name in storage.IterProfileNames())
             {
-                if (!path.EndsWith(".xml"))
-                    continue;
-
-                AddRowForFile(path);
+                AppendProfileToTable(name);
             }
 
             profilesTable.Add(new MyGuiControlTable.Row());
-            profilesTable.SelectedRowIndex = profilesTable.Rows.Count - 1;
+            SelectRow(profilesTable.Rows.Count - 1);
         }
 
-        private void AddRowForFile(string path)
+        private void SelectRow(int index)
         {
-            var json = ReadJson(path);
-            CountUsedSlots(json);
+            profilesTable.SelectedRowIndex = index;
 
-            var fileName = Path.GetFileName(path);
-            var name = fileName.Substring(0, fileName.Length - 4);
+            UpdateButtons();
+
+            if (SelectedName != null)
+                profilesTable.ScrollToSelection();
+        }
+
+        private void AppendProfileToTable(string name)
+        {
+            var json = storage.ReadJson(name);
+            CountUsedSlots(json);
 
             var row = new MyGuiControlTable.Row(name);
 
@@ -281,30 +295,6 @@ namespace ToolbarManager.Gui
                 row.AddCell(new MyGuiControlTable.Cell(usedSlotCounts[i] > 0 ? $"{usedSlotCounts[i]}" : "-"));
 
             profilesTable.Add(row);
-        }
-
-        private static JsonData ReadJson(string xmlPath)
-        {
-            var jsonPath = XmlToJsonPath(xmlPath);
-
-            if (!File.Exists(jsonPath))
-                return null;
-
-            try
-            {
-                var jsonText = File.ReadAllText(jsonPath);
-                return JsonMapper.ToObject(jsonText);
-            }
-            catch (JsonException e)
-            {
-                MyLog.Default.Warning($"ToolbarManager: Failed to load JSON toolbar file \"{jsonPath}\" ({e})");
-                return null;
-            }
-        }
-
-        private static string XmlToJsonPath(string xmlPath)
-        {
-            return xmlPath.Substring(0, xmlPath.Length - 4) + ".json";
         }
 
         private void CountUsedSlots(JsonData json)
@@ -337,9 +327,7 @@ namespace ToolbarManager.Gui
         private void OnNewNameSpecified(string oldName, string newName)
         {
             newName = PathExt.SanitizeFileName(newName);
-
-            var newPath = Path.Combine(dataDir, $"{newName}.xml");
-            if (File.Exists(newPath))
+            if (storage.HasProfile(newName))
             {
                 MyGuiSandbox.AddScreen(
                     MyGuiSandbox.CreateMessageBox(buttonType: MyMessageBoxButtonsType.YES_NO,
@@ -358,25 +346,10 @@ namespace ToolbarManager.Gui
             if (result != MyGuiScreenMessageBox.ResultEnum.YES)
                 return;
 
-            var oldPath = Path.Combine(dataDir, $"{oldName}.xml");
-            var newPath = Path.Combine(dataDir, $"{newName}.xml");
+            storage.Rename(oldName, newName);
 
-            var oldJsonPath = XmlToJsonPath(oldPath);
-            var newJsonPath = XmlToJsonPath(newPath);
-
-            if (File.Exists(newPath))
-                File.Delete(newPath);
-
-            if (File.Exists(newJsonPath))
-                File.Delete(newJsonPath);
-
-            if (File.Exists(oldPath))
-                File.Move(oldPath, newPath);
-
-            if (File.Exists(oldJsonPath))
-                File.Move(oldJsonPath, newJsonPath);
-
-            AddTableRows();
+            RefreshTableRows();
+            SelectRowByName(newName);
         }
 
         private void OnDeleteForSure(MyGuiScreenMessageBox.ResultEnum result, string name)
@@ -384,17 +357,47 @@ namespace ToolbarManager.Gui
             if (result != MyGuiScreenMessageBox.ResultEnum.YES)
                 return;
 
-            var path = Path.Combine(dataDir, $"{name}.xml");
-            var jsonPath = XmlToJsonPath(path);
+            storage.Delete(name);
 
-            if (File.Exists(path))
-                File.Delete(path);
+            RefreshTableRows();
+        }
 
-            if (File.Exists(jsonPath))
-                File.Delete(jsonPath);
+        private void SaveAsNewProfile(string name)
+        {
+            if (name == null || name.Trim().Length == 0)
+                return;
 
-            if (TryFindListItem(name, out var index))
-                profilesTable.Remove(profilesTable.GetRow(index));
+            if (storage.HasProfile(name))
+            {
+                MyGuiSandbox.AddScreen(
+                    MyGuiSandbox.CreateMessageBox(buttonType: MyMessageBoxButtonsType.YES_NO,
+                        messageText: new StringBuilder($"Are you sure to overwrite this saved toolbar?\r\n\r\n{name}"),
+                        messageCaption: new StringBuilder("Confirmation"),
+                        callback: result => OnSaveOverwriteForSure(result, name)));
+            }
+            else
+            {
+                OnSaveOverwriteForSure(MyGuiScreenMessageBox.ResultEnum.YES, name);
+            }
+        }
+
+        private void OnSaveOverwriteForSure(MyGuiScreenMessageBox.ResultEnum result, string name)
+        {
+            if (result != MyGuiScreenMessageBox.ResultEnum.YES)
+                return;
+
+            try
+            {
+                storage.Save(name);
+            }
+            catch (Exception e)
+            {
+                MyLog.Default.Error($"ToolbarManager: Failed to save toolbar \"{{name}}\": {e}");
+                MyGuiSandboxExt.Show("Failed to save toolbar", "Error");
+            }
+
+            RefreshTableRows();
+            SelectRowByName(name);
         }
 
         private bool TryFindListItem(string name, out int index)
@@ -402,7 +405,7 @@ namespace ToolbarManager.Gui
             var count = profilesTable.RowsCount;
             for (index = 0; index < count; index++)
             {
-                if (profilesTable.UserData is string s && s == name)
+                if (profilesTable.Rows[index].UserData is string s && s == name)
                     return true;
             }
 
@@ -412,13 +415,12 @@ namespace ToolbarManager.Gui
 
         private string SelectedName => profilesTable.SelectedRow?.UserData as string;
 
-        private void SelectByName(string name)
+        private void SelectRowByName(string name)
         {
             if (!TryFindListItem(name, out var i))
                 return;
 
-            profilesTable.SelectedRowIndex = i;
-            UpdateButtons();
+            SelectRow(i);
         }
     }
 }

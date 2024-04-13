@@ -139,7 +139,7 @@
         <Compile Include="Gui\ProfilesDialog.cs" />
         <Compile Include="Gui\NameDialog.cs" />
         <Compile Include="Logic\Toolbar.cs" />
-        <Compile Include="Logic\Storage.cs" />
+        <Compile Include="Logic\ProfileStorage.cs" />
         <Compile Include="Logic\Slot.cs" />
         <Compile Include="Patches\MyGuiScreenGamePlayPatch.cs" />
         <Compile Include="Patches\MyGuiScreenToolbarConfigBasePatch.cs" />
