@@ -19,11 +19,12 @@ namespace ToolbarManager.Gui
     public class ListDialog : MyGuiScreenDebugBase
     {
         private MyGuiControlTable toolbarTable;
+        private MyGuiControlButton newButton;
         private MyGuiControlButton loadButton;
         private MyGuiControlButton mergeButton;
         private MyGuiControlButton renameButton;
         private MyGuiControlButton deleteButton;
-        private MyGuiControlButton cancelButton;
+        private MyGuiControlButton closeButton;
 
         private readonly Action<string, bool> callBack;
         private readonly string caption;
@@ -103,50 +104,64 @@ namespace ToolbarManager.Gui
 
         private void CreateButtons()
         {
-            loadButton = new MyGuiControlButton(
-                visualStyle: MyGuiControlButtonStyleEnum.Default,
+            newButton = new MyGuiControlButton(
+                visualStyle: MyGuiControlButtonStyleEnum.Small,
                 originAlign: MyGuiDrawAlignEnum.HORISONTAL_CENTER_AND_VERTICAL_CENTER,
-                text: new StringBuilder("Load"), onButtonClick: OnLoad);
+                text: new StringBuilder("New"),
+                onButtonClick: OnNew);
+
+            loadButton = new MyGuiControlButton(
+                visualStyle: MyGuiControlButtonStyleEnum.Small,
+                originAlign: MyGuiDrawAlignEnum.HORISONTAL_CENTER_AND_VERTICAL_CENTER,
+                text: new StringBuilder("Load"),
+                onButtonClick: OnLoad);
 
             mergeButton = new MyGuiControlButton(
-                visualStyle: MyGuiControlButtonStyleEnum.Default,
+                visualStyle: MyGuiControlButtonStyleEnum.Small,
                 originAlign: MyGuiDrawAlignEnum.HORISONTAL_CENTER_AND_VERTICAL_CENTER,
-                text: new StringBuilder("Merge"), onButtonClick: OnMerge);
+                text: new StringBuilder("Merge"),
+                onButtonClick: OnMerge);
 
             renameButton = new MyGuiControlButton(
                 visualStyle: MyGuiControlButtonStyleEnum.Small,
                 originAlign: MyGuiDrawAlignEnum.HORISONTAL_CENTER_AND_VERTICAL_CENTER,
-                text: new StringBuilder("Rename"), onButtonClick: OnRename);
+                text: new StringBuilder("Rename"),
+                onButtonClick: OnRename);
 
             deleteButton = new MyGuiControlButton(
                 visualStyle: MyGuiControlButtonStyleEnum.Small,
                 originAlign: MyGuiDrawAlignEnum.HORISONTAL_CENTER_AND_VERTICAL_CENTER,
-                text: new StringBuilder("Delete"), onButtonClick: OnDelete);
+                text: new StringBuilder("Delete"),
+                onButtonClick: OnDelete);
 
-            cancelButton = new MyGuiControlButton(
+            closeButton = new MyGuiControlButton(
                 visualStyle: MyGuiControlButtonStyleEnum.Small,
                 originAlign: MyGuiDrawAlignEnum.HORISONTAL_CENTER_AND_VERTICAL_CENTER,
-                text: MyTexts.Get(MyCommonTexts.Cancel), onButtonClick: OnCancel);
+                text: new StringBuilder("Close"),
+                onButtonClick: OnClose);
 
             var xs = 0.85f * DialogSize.X;
             var y = 0.5f * (DialogSize.Y - 0.15f);
+            newButton.Position = new Vector2(-0.39f * xs, y);
             loadButton.Position = new Vector2(-0.39f * xs, y);
             mergeButton.Position = new Vector2(-0.16f * xs, y);
             renameButton.Position = new Vector2(0.06f * xs, y);
             deleteButton.Position = new Vector2(0.24f * xs, y);
-            cancelButton.Position = new Vector2(0.42f * xs, y);
+            closeButton.Position = new Vector2(0.42f * xs, y);
 
-            loadButton.SetToolTip("Loads the selected toolbar replacing the current one");
-            mergeButton.SetToolTip("Merges the selected toolbar into the current one");
-            renameButton.SetToolTip("Renames the selected toolbar save file");
-            deleteButton.SetToolTip("Deletes the selected toolbar save file");
-            cancelButton.SetToolTip(MyTexts.GetString(MySpaceTexts.ToolTipOptionsSpace_Cancel));
+            newButton.SetToolTip("Saves the current toolbar as a new profile");
+            loadButton.SetToolTip("Loads the selected profile replacing the current toolbar");
+            mergeButton.SetToolTip("Merges the selected profile into the current toolbar");
+            renameButton.SetToolTip("Renames the selected profile");
+            deleteButton.SetToolTip("Deletes the selected profile");
+            closeButton.SetToolTip("Closes the dialog with no further changes");
 
+            Controls.Add(newButton);
             Controls.Add(loadButton);
             Controls.Add(mergeButton);
             Controls.Add(renameButton);
             Controls.Add(deleteButton);
-            Controls.Add(cancelButton);
+            Controls.Add(closeButton);
         }
 
         private void ListFiles()
@@ -256,9 +271,9 @@ namespace ToolbarManager.Gui
 
         private string SelectedName => toolbarTable.SelectedRow?.GetCell(0)?.Text?.ToString() ?? "";
 
-        private void OnLoad(MyGuiControlButton button) => ReturnLoad();
+        private void OnNewOrLoad(MyGuiControlButton button) => ReturnLoad();
         private void OnMerge(MyGuiControlButton button) => ReturnMerge();
-        private void OnCancel(MyGuiControlButton button) => CloseScreen();
+        private void OnClose(MyGuiControlButton button) => CloseScreen();
 
         private void OnRename(MyGuiControlButton _)
         {
