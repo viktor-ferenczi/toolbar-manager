@@ -14,17 +14,11 @@ namespace ToolbarManager.Logic
 {
     public class Storage
     {
-        // MyFileSystem.UserDataPath ~= C:\Users\%USERNAME%\AppData\Roaming\SpaceEngineers
         private static string UserDataDir => Path.Combine(MyFileSystem.UserDataPath, "ToolbarManager");
-
-        private readonly Dictionary<string, string> latestNames = new Dictionary<string, string>();
 
         public Storage()
         {
-            MyGuiScreenToolbarConfigBasePatch.OnLoadToolbar += OnLoadToolbar;
-            MyGuiScreenToolbarConfigBasePatch.OnSaveToolbar += OnSaveToolbar;
-
-            MyLog.Default.Info($"ToolbarManager: UserDataDir = \"{UserDataDir}\"");
+            MyGuiScreenToolbarConfigBasePatch.OnProfilesClicked += OnProfilesClicked;
         }
 
         private static string FormatPath(MyToolbar currentToolbar, string name)
@@ -41,7 +35,7 @@ namespace ToolbarManager.Logic
             return dir;
         }
 
-        private void OnSaveToolbar()
+        private void SaveToProfile()
         {
             var currentToolbar = MyToolbarComponent.CurrentToolbar;
             if (currentToolbar == null)
@@ -98,7 +92,7 @@ namespace ToolbarManager.Logic
             }
         }
 
-        private void OnLoadToolbar()
+        private void OnProfilesClicked()
         {
             var currentToolbar = MyToolbarComponent.CurrentToolbar;
             if (currentToolbar == null)

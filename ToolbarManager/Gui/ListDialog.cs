@@ -10,14 +10,15 @@ using VRage.Game;
 using VRage.Utils;
 using VRageMath;
 
-// ReSharper disable VirtualMemberCallInConstructor
 
 namespace ToolbarManager.Gui
 {
+    // ReSharper disable VirtualMemberCallInConstructor
     public class ListDialog : MyGuiScreenDebugBase
     {
         private MyGuiControlTable toolbarTable;
         private MyGuiControlButton newButton;
+        private MyGuiControlButton updateButton;
         private MyGuiControlButton loadButton;
         private MyGuiControlButton mergeButton;
         private MyGuiControlButton renameButton;
@@ -108,6 +109,12 @@ namespace ToolbarManager.Gui
                 text: new StringBuilder("New"),
                 onButtonClick: OnNew);
 
+            updateButton = new MyGuiControlButton(
+                visualStyle: MyGuiControlButtonStyleEnum.Small,
+                originAlign: MyGuiDrawAlignEnum.HORISONTAL_CENTER_AND_VERTICAL_CENTER,
+                text: new StringBuilder("Update"),
+                onButtonClick: OnUpdate);
+
             loadButton = new MyGuiControlButton(
                 visualStyle: MyGuiControlButtonStyleEnum.Small,
                 originAlign: MyGuiDrawAlignEnum.HORISONTAL_CENTER_AND_VERTICAL_CENTER,
@@ -141,13 +148,15 @@ namespace ToolbarManager.Gui
             var xs = 0.85f * DialogSize.X;
             var y = 0.5f * (DialogSize.Y - 0.15f);
             newButton.Position = new Vector2(-0.39f * xs, y);
-            loadButton.Position = new Vector2(-0.39f * xs, y);
-            mergeButton.Position = new Vector2(-0.16f * xs, y);
-            renameButton.Position = new Vector2(0.06f * xs, y);
-            deleteButton.Position = new Vector2(0.24f * xs, y);
-            closeButton.Position = new Vector2(0.42f * xs, y);
+            updateButton.Position = new Vector2(-0.39f * xs, y);
+            loadButton.Position = new Vector2(-0.16f * xs, y);
+            mergeButton.Position = new Vector2(0.06f * xs, y);
+            renameButton.Position = new Vector2(0.24f * xs, y);
+            deleteButton.Position = new Vector2(0.42f * xs, y);
+            closeButton.Position = new Vector2(0.64f * xs, y);
 
             newButton.SetToolTip("Saves the current toolbar as a new profile");
+            updateButton.SetToolTip("Updates the selected profile with the current toolbar");
             loadButton.SetToolTip("Loads the selected profile replacing the current toolbar");
             mergeButton.SetToolTip("Merges the selected profile into the current toolbar");
             renameButton.SetToolTip("Renames the selected profile");
@@ -155,6 +164,7 @@ namespace ToolbarManager.Gui
             closeButton.SetToolTip("Closes the dialog with no further changes");
 
             Controls.Add(newButton);
+            Controls.Add(updateButton);
             Controls.Add(loadButton);
             Controls.Add(mergeButton);
             Controls.Add(renameButton);
@@ -164,7 +174,12 @@ namespace ToolbarManager.Gui
 
         private void OnNew(MyGuiControlButton button)
         {
-            throw new NotImplementedException();
+            // Storage.OnSaveToolbar();
+        }
+
+        private void OnUpdate(MyGuiControlButton obj)
+        {
+            // Storage.OnSaveToolbar();
         }
 
         private void OnLoad(MyGuiControlButton button)
@@ -215,8 +230,10 @@ namespace ToolbarManager.Gui
                 AddRowForFile(path);
             }
 
-            if (TryFindListItem(defaultName, out var index))
-                toolbarTable.SelectedRowIndex = index;
+            toolbarTable.SelectedRowIndex = TryFindListItem(defaultName, out var index) ? (int?) index : null;
+
+            newButton.Visible = toolbarTable.SelectedRowIndex == null;
+            updateButton.Visible = toolbarTable.SelectedRowIndex != null;
         }
 
         private void AddRowForFile(string path)

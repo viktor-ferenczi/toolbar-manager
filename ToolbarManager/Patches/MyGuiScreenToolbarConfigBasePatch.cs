@@ -6,57 +6,34 @@ using Sandbox.Graphics.GUI;
 using VRage.Game;
 using VRageMath;
 
-// ReSharper disable UnusedMember.Local
-
-// ReSharper disable UnusedType.Global
-
-// ReSharper disable InconsistentNaming
-
 namespace ToolbarManager.Patches
 {
+    // ReSharper disable UnusedMember.Local
+    // ReSharper disable UnusedType.Global
+    // ReSharper disable InconsistentNaming
     [HarmonyPatch(typeof(MyGuiScreenToolbarConfigBase))]
     public static class MyGuiScreenToolbarConfigBasePatch
     {
-        public static event Action OnSaveToolbar;
-        public static event Action OnLoadToolbar;
+        public static event Action OnProfilesClicked;
 
         [HarmonyPostfix]
         [HarmonyPatch(nameof(MyGuiScreenToolbarConfigBase.RecreateControls))]
         private static void RecreateControlsPostfix(MyGuiScreenToolbarConfigBase __instance)
         {
             var toolbarType = MyToolbarComponent.CurrentToolbar?.ToolbarType;
-            var enabled = toolbarType != null && toolbarType != MyToolbarType.None;
-        
-            createSaveButton(__instance, enabled);
-            createLoadButton(__instance, enabled);
-        }
 
-        private static void createSaveButton(MyGuiScreenToolbarConfigBase screen, bool enabled)
-        {
             var button = new MyGuiControlButton
             {
-                Text = "Save",
-                Name = "SaveToolbarButton",
+                Text = "Profiles",
+                Name = "ToolbarProfilesButton",
                 VisualStyle = MyGuiControlButtonStyleEnum.Small,
-                Position = new Vector2(-0.425f, 0.41f)
+                Position = new Vector2(-0.45f, 0.435f)
             };
-            button.ButtonClicked += _ => OnSaveToolbar?.Invoke();
-            button.Enabled = enabled;
-            screen.Elements.Add(button);
-        }
 
-        private static void createLoadButton(MyGuiScreenToolbarConfigBase screen, bool enabled)
-        {
-            var button = new MyGuiControlButton
-            {
-                Text = "Load",
-                Name = "LoadToolbarButton",
-                VisualStyle = MyGuiControlButtonStyleEnum.Small,
-                Position = new Vector2(-0.425f, 0.46f)
-            };
-            button.ButtonClicked += _ => OnLoadToolbar?.Invoke();
-            button.Enabled = enabled;
-            screen.Elements.Add(button);
+            button.ButtonClicked += _ => OnProfilesClicked?.Invoke();
+            button.Enabled = toolbarType != null && toolbarType != MyToolbarType.None;
+
+            __instance.Elements.Add(button);
         }
     }
 }
