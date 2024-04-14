@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text;
 using LitJson;
 using Sandbox;
@@ -18,6 +19,7 @@ namespace ToolbarManager.Gui
     public class ProfilesDialog : MyGuiScreenDebugBase
     {
         private MyGuiControlTable profilesTable;
+        private MyGuiControlSearchBox searchBox;
         private MyGuiControlButton newButton, updateButton, loadButton, mergeButton, renameButton, deleteButton, closeButton;
         private readonly int[] usedSlotCounts = new int[9];
         private readonly ProfileStorage storage;
@@ -44,6 +46,7 @@ namespace ToolbarManager.Gui
 
             CreateButtons();
             CreateTable();
+            RefreshTableRows();
         }
 
         private Vector2 DialogSize => m_size ?? Vector2.One;
@@ -68,12 +71,25 @@ namespace ToolbarManager.Gui
                 profilesTable.SetColumnName(i, new StringBuilder($"{i}"));
             profilesTable.SortByColumn(0);
 
-            RefreshTableRows();
-
             profilesTable.ItemSelected += OnItemSelected;
             profilesTable.ItemDoubleClicked += OnItemDoubleClicked;
 
+            searchBox = new MyGuiControlSearchBox
+            {
+                Position = profilesTable.Position + new Vector2(-0.45f, -0.036f),
+                Size = new Vector2(0.35f, 0.032f),
+                OriginAlign = MyGuiDrawAlignEnum.HORISONTAL_LEFT_AND_VERTICAL_CENTER,
+            };
+            searchBox.OnTextChanged += OnSearchTextChange;
+
             Controls.Add(profilesTable);
+            Controls.Add(searchBox);
+        }
+
+        private void OnSearchTextChange(string text)
+        {
+            RefreshTableRows();
+            SelectRow(0);
         }
 
         private void OnItemSelected(MyGuiControlTable table, MyGuiControlTable.EventArgs args)
@@ -268,9 +284,18 @@ namespace ToolbarManager.Gui
         {
             profilesTable.Clear();
 
+            var pattern = searchBox.SearchText?
+                .ToLower()
+                .Split(' ')
+                .Where(part => part.Length != 0)
+                .ToArray();
+
             foreach (var name in storage.IterProfileNames())
             {
-                AppendProfileToTable(name);
+                if (name.ToLower().IsMatching(pattern))
+                {
+                    AppendProfileToTable(name);
+                }
             }
 
             profilesTable.Add(new MyGuiControlTable.Row());
