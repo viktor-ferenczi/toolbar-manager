@@ -16,10 +16,10 @@ namespace ToolbarManager.Patches
     // ReSharper disable once UnusedType.Global
     public static class MyGuiScreenGamePlayPatch
     {
+#if DISABLED
         private static readonly List<MyKeys> PressedKeys = new List<MyKeys>();
-
         private static readonly StringBuilder MatchingKeys = new StringBuilder();
-        // private static readonly ListDialog ListDialog = new ListDialog();
+#endif
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(MyGuiScreenGamePlay.HandleUnhandledInput))]
@@ -28,7 +28,8 @@ namespace ToolbarManager.Patches
             if (MyGuiScreenGamePlay.ActiveGameplayScreen != null || !(MySession.Static.ControlledEntity is MyCharacter))
                 return true;
 
-            /* Disabled due to Issue #12: Conflicting keys Ctrl+Shift+C, Ctrl+Shift+X and Ctrl+Shift+B
+#if DISABLED
+            // Disabled due to Issue #12: Conflicting keys Ctrl+Shift+C, Ctrl+Shift+X and Ctrl+Shift+B
             if (myInput.IsAnyShiftKeyPressed() && myInput.IsAnyCtrlKeyPressed())
             {
                 GetPressedKeys();
@@ -38,8 +39,8 @@ namespace ToolbarManager.Patches
                     return false;
                 }
             }
-            */
-            
+#endif
+
             var myInput = MyInput.Static;
             if (myInput.IsNewKeyPressed(MyKeys.OemPipe))
             {
@@ -61,6 +62,7 @@ namespace ToolbarManager.Patches
             dialog.SetSearchText(searchText);
         }
 
+#if DISABLED
         private static void GetPressedKeys()
         {
             MatchingKeys.Clear();
@@ -78,5 +80,6 @@ namespace ToolbarManager.Patches
                     MatchingKeys.Append(c);
             }
         }
+#endif
     }
 }
