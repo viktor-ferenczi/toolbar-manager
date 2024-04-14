@@ -17,29 +17,40 @@ namespace ToolbarManager.Logic
         private static string PluginDataDir => Path.Combine(MyFileSystem.UserDataPath, "ToolbarManager");
 
         private readonly MyToolbar currentToolbar;
-        private readonly string profilesDir;
+        private readonly string profileDir;
+        private readonly string backupDir;
 
         public ProfileStorage(MyToolbar currentToolbar)
         {
             this.currentToolbar = currentToolbar;
-            profilesDir = Path.Combine(PluginDataDir, currentToolbar.ToolbarType.ToString());
-            Directory.CreateDirectory(profilesDir);
+
+            profileDir = Path.Combine(PluginDataDir, currentToolbar.ToolbarType.ToString());
+            Directory.CreateDirectory(profileDir);
+
+            backupDir = Path.Combine(profileDir, "Backup");
+            Directory.CreateDirectory(backupDir);
         }
 
-        private string FormatPath(string name, string extension)
+        private string FormatProfilePath(string name, string extension)
         {
-            var sanitizedName = PathExt.SanitizeFileName(name);
-            return Path.Combine(profilesDir, $"{sanitizedName}.{extension}");
+            var sanitizedName = name.SanitizeFileName();
+            return Path.Combine(profileDir, $"{sanitizedName}.{extension}");
+        }
+
+        private string FormatBackupPath(string name, string extension, int index)
+        {
+            var sanitizedName = name.SanitizeFileName();
+            return Path.Combine(backupDir, $"{sanitizedName}.{extension}.{index}");
         }
 
         public IEnumerable<string> IterProfileNames()
         {
-            foreach (var path in Directory.EnumerateFiles(profilesDir))
+            foreach (var path in Directory.EnumerateFiles(profileDir))
             {
                 if (!path.EndsWith(".xml"))
                     continue;
 
-                var start = profilesDir.Length + 1;
+                var start = profileDir.Length + 1;
                 var end = path.Length - 4;
                 yield return path.Substring(start, end - start);
             }
@@ -47,28 +58,28 @@ namespace ToolbarManager.Logic
 
         public bool HasProfile(string name)
         {
-            return File.Exists(FormatPath(name, "xml"));
+            return File.Exists(FormatProfilePath(name, "xml"));
         }
 
         public void Save(string name)
         {
             var toolbar = new Toolbar(currentToolbar);
 
-            var jsonPath = FormatPath(name, "json");
+            var jsonPath = FormatProfilePath(name, "json");
             toolbar.WriteJson(jsonPath);
 
             toolbar.Dissociate(currentToolbar);
 
-            var xmlPath = FormatPath(name, "xml");
+            var xmlPath = FormatProfilePath(name, "xml");
             toolbar.Write(xmlPath);
 
-            Backup(jsonPath);
-            Backup(xmlPath);
+            Backup(name, "xml");
+            Backup(name, "json");
         }
 
         public void Load(string name, bool merge)
         {
-            var xmlPath = FormatPath(name, "xml");
+            var xmlPath = FormatProfilePath(name, "xml");
 
             var toolbar = Toolbar.Read(xmlPath);
 
@@ -82,7 +93,7 @@ namespace ToolbarManager.Logic
 
         public JsonData ReadJson(string name)
         {
-            var jsonPath = FormatPath(name, "json");
+            var jsonPath = FormatProfilePath(name, "json");
             if (!File.Exists(jsonPath))
                 return null;
 
@@ -100,11 +111,11 @@ namespace ToolbarManager.Logic
 
         public void Rename(string oldName, string newName)
         {
-            var oldXmlPath = FormatPath(oldName, "xml");
-            var newXmlPath = FormatPath(newName, "xml");
+            var oldXmlPath = FormatProfilePath(oldName, "xml");
+            var newXmlPath = FormatProfilePath(newName, "xml");
 
-            var oldJsonPath = FormatPath(oldName, "json");
-            var newJsonPath = FormatPath(newName, "json");
+            var oldJsonPath = FormatProfilePath(oldName, "json");
+            var newJsonPath = FormatProfilePath(newName, "json");
 
             if (File.Exists(newXmlPath))
                 File.Delete(newXmlPath);
@@ -115,14 +126,13 @@ namespace ToolbarManager.Logic
             File.Move(oldXmlPath, newXmlPath);
             File.Move(oldJsonPath, newJsonPath);
 
-            RenameBackups(oldXmlPath, newXmlPath);
-            RenameBackups(oldJsonPath, newJsonPath);
+            RenameBackups(oldName, newName);
         }
 
         public void Delete(string name)
         {
-            var xmlPath = FormatPath(name, "xml");
-            var jsonPath = FormatPath(name, "json");
+            var xmlPath = FormatProfilePath(name, "xml");
+            var jsonPath = FormatProfilePath(name, "json");
 
             if (File.Exists(xmlPath))
                 File.Delete(xmlPath);
@@ -133,12 +143,21 @@ namespace ToolbarManager.Logic
             DeleteOldBackupsOfDeletedProfiles();
         }
 
-        private void Backup(string path)
+        private void Backup(string name, string extension)
+        {
+            RotateBackups(name, extension);
+
+            var profilePath = FormatProfilePath(name, extension);
+            var backupPath = FormatBackupPath(name, extension, 0);
+            File.Copy(profilePath, backupPath);
+        }
+
+        private void RotateBackups(string name, string extension)
         {
             for (var i = NumberOfBackups; i > 0; i--)
             {
-                var olderPath = $"{path}.{i}";
-                var newerPath = $"{path}.{i - 1}";
+                var olderPath = FormatBackupPath(name, extension, i);
+                var newerPath = FormatBackupPath(name, extension, i - 1);
 
                 if (File.Exists(olderPath))
                     File.Delete(olderPath);
@@ -146,56 +165,63 @@ namespace ToolbarManager.Logic
                 if (File.Exists(newerPath))
                     File.Move(newerPath, olderPath);
             }
-
-            File.Copy(path, $"{path}.0");
         }
 
-        private void RenameBackups(string oldPath, string newPath)
+        private void RenameBackups(string oldName, string newName)
         {
             for (var i = 0; i <= NumberOfBackups; i++)
             {
-                var oldBackup = $"{oldPath}.{i}";
-                var newBackup = $"{newPath}.{i}";
-
-                if (File.Exists(newBackup))
-                {
-                    var overwritten = newBackup;
-                    for (var j = 0; j < 100; j++)
-                    {
-                        overwritten = $"{overwritten}.{i}";
-                        if (!File.Exists(overwritten))
-                        {
-                            File.Move(newBackup, overwritten);
-                            overwritten = null;
-                            break;
-                        }
-                    }
-                    if (overwritten != null)
-                        File.Delete(newBackup);
-                }
-
-                if (File.Exists(oldBackup))
-                    File.Move(oldBackup, newBackup);
+                RenameBackup(oldName, newName, "xml", i);
+                RenameBackup(oldName, newName, "json", i);
             }
+        }
+
+        private void RenameBackup(string oldName, string newName, string extension, int index)
+        {
+            var oldBackup = FormatBackupPath(oldName, extension, index);
+            var newBackup = FormatBackupPath(newName, extension, index);
+
+            if (File.Exists(newBackup))
+            {
+                var overwritten = newBackup;
+                for (var j = 0; j < 100; j++)
+                {
+                    overwritten = $"{overwritten}.{index}";
+                    if (!File.Exists(overwritten))
+                    {
+                        File.Move(newBackup, overwritten);
+                        overwritten = null;
+                        break;
+                    }
+                }
+                if (overwritten != null)
+                    File.Delete(newBackup);
+            }
+
+            if (File.Exists(oldBackup))
+                File.Move(oldBackup, newBackup);
         }
 
         private void DeleteOldBackupsOfDeletedProfiles()
         {
             var now = DateTime.Now;
-            foreach (var path in Directory.EnumerateFiles(profilesDir))
+            foreach (var backupPath in Directory.EnumerateFiles(backupDir))
             {
-                for (var i = 0; i <= NumberOfBackups; i++)
-                {
-                    if (!path.EndsWith($".{i}"))
-                        continue;
+                var backupFilename = Path.GetFileName(backupPath);
+                var len = backupFilename.Length;
+                if (len < 2 || backupFilename[len - 2] != '.' || !backupFilename[len - 1].IsDigit())
+                    continue;
 
-                    var dt = File.GetLastWriteTime(path);
-                    if ((now - dt).Days < DeleteOldBackupsOfDeletedProfilesAfterDays)
-                        continue;
+                var profileFilename = backupFilename.Substring(0, len - 2);
+                var profilePath = Path.Combine(profileDir, profileFilename);
+                if (File.Exists(profilePath))
+                    continue;
 
-                    File.Delete(path);
-                    break;
-                }
+                var dt = File.GetLastWriteTime(backupPath);
+                if ((now - dt).Days < DeleteOldBackupsOfDeletedProfilesAfterDays)
+                    continue;
+
+                File.Delete(backupPath);
             }
         }
     }

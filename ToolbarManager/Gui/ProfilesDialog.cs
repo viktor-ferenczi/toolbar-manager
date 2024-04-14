@@ -331,7 +331,7 @@ namespace ToolbarManager.Gui
 
         private void OnNewNameSpecified(string oldName, string newName)
         {
-            newName = PathExt.SanitizeFileName(newName);
+            newName = newName.SanitizeFileName();
             if (storage.HasProfile(newName))
             {
                 MyGuiSandbox.AddScreen(

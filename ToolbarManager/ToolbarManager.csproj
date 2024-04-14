@@ -134,6 +134,7 @@
         <Compile Include="Extensions\MyGuiSandboxExt.cs" />
         <Compile Include="Extensions\MyGuiScreenToolbarConfigBaseExt.cs" />
         <Compile Include="Extensions\PathExt.cs" />
+        <Compile Include="Extensions\StringExt.cs" />
         <Compile Include="Gui\CustomSearchCondition.cs" />
         <Compile Include="Gui\CustomToolbarConfigScreen.cs" />
         <Compile Include="Gui\ProfilesDialog.cs" />

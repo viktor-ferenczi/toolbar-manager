@@ -2,7 +2,7 @@ namespace ToolbarManager.Extensions
 {
     public static class PathExt
     {
-        public static string SanitizeFileName(string name)
+        public static string SanitizeFileName(this string name)
         {
             return name
                 .Trim()

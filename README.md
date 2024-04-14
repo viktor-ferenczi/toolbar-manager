@@ -8,28 +8,43 @@ Please consider [supporting my work on Patreon](https://www.patreon.com/semods).
 
 ## Features
 
-This plugin allows for saving and loading toolbars. For example you can 
-quickly load a "standard" toolbar into any game, which can greatly speed
-up your builds by using toolbar slots you have already memorized.
+This plugin allows for saving, loading and managing character and block
+toolbars. For example you can  quickly load a "standard" toolbar for
+your character into any game (including multiplayer ones), which can
+greatly speed up your builds by using toolbar slots you have already
+memorized. It can also be used to fix the broken toolbars of your
+ships in survival based on the profiles you saved in your creative
+design world earlier.
 
 This plugin works for both offline and online multiplayer games without
-the need for any server side support. All your save files are local, 
-nothing is stored on a server.
+the need for any server side support. Toolbar profiles are saved locally,
+nothing is stored on any server.
 
 ### Toolbars
 
-The **G menu** has two new buttons to manage saved toolbars:
-- Save
-- Load
+The **G menu** has a new TM buttons at the bottom left to manage saved
+toolbar profiles.
 
-**Merge** is the same as **Load**, but does not clear slots not used by the toolbar loaded.
+**New** saves the currently open toolbar as a new profile.
 
-Saved toolbars are stored as XML files under: `%AppData%\Roaming\SpaceEngineers\ToolbarManager`
+**Load** overwrites your currently open toolbar from the selected profile. 
+
+**Merge** loads only the used slots from the profile and leaves the rest of them as is.
+
+You can also **Rename** and **Delete** toolbar profiles.
+
+### Profile folders
+
+Saved toolbars are stored as XML files in folders under:
+`%AppData%\Roaming\SpaceEngineers\ToolbarManager`
 
 There are subdirectories for each toolbar type. Toolbars within the same type are compatible,
-altough they may not have the same amount of slots available.
+however they may not have the same amount of slots available in-game. For example, it is
+possible to save the toolbar from any Cockpit and load the profile into a Remote Control.
 
-It is possible to save the toolbar from a cockpit and load into a remote control, for example.
+Up to 6 backups of each profile is kept, even after deleting the profile. Renaming profiles
+also renames the backup files. Orphaned backup files (with the main profile deleted) are
+cleaned up after 90 days, but only when a profile is deleted the next time.
 
 ### Quick block selection
 
@@ -56,8 +71,8 @@ space are skipped after a matching upper chase character or digit.
 Separating multiple search patterns by space is not supported, currently.
 
 ### Planned features
-- Restricting the load/merge operations to certain toolbar pages
 - Multiplying the available toolbar pages using new hotkeys and saved toolbars
+- Restricting the load/merge operations to certain toolbar pages
 - Moving and swapping toolbar items using mouse drag&drop
 - Moving toolbar items between toolbar pages
 - Swapping toolbar pages
@@ -109,7 +124,7 @@ After enabling the plugin it will be active for all single- and multiplayer worl
 
 #### Testers
 - Avaness
-- ...
+- mkaito
 
 ### Creators
 - avaness - Plugin Loader, Racing Display
