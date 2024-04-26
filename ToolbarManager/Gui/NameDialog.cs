@@ -22,18 +22,21 @@ namespace ToolbarManager.Gui
         private readonly string caption;
         private readonly string defaultName;
         private readonly int maxLength;
+        private readonly bool moveCursorToEnd;
 
         public NameDialog(
             Action<string> callBack,
             string caption,
             string defaultName,
-            int maxLength = 40)
+            int maxLength = 40,
+            bool moveCursorToEnd = false)
             : base(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.28f), MyGuiConstants.SCREEN_BACKGROUND_COLOR * MySandboxGame.Config.UIBkOpacity, true)
         {
             this.callBack = callBack;
             this.caption = caption;
             this.defaultName = defaultName;
             this.maxLength = maxLength;
+            this.moveCursorToEnd = moveCursorToEnd;
 
             RecreateControls(true);
 
@@ -65,7 +68,14 @@ namespace ToolbarManager.Gui
                 Text = defaultName,
                 Size = new Vector2(0.385f, 1f)
             };
-            nameBox.SelectAll();
+            if (moveCursorToEnd)
+            {
+                nameBox.MoveCarriageToEnd();
+            }
+            else
+            {
+                nameBox.SelectAll();
+            }
             Controls.Add(nameBox);
 
             okButton = new MyGuiControlButton(originAlign: MyGuiDrawAlignEnum.HORISONTAL_RIGHT_AND_VERTICAL_CENTER, text: MyTexts.Get(MyCommonTexts.Ok), onButtonClick: OnOk);

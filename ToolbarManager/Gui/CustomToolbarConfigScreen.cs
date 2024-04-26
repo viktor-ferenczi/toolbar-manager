@@ -1,4 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
+using HarmonyLib;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Gui;
 using Sandbox.Game.Screens.Helpers;
@@ -14,6 +16,9 @@ namespace ToolbarManager.Gui
     [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public class CustomToolbarConfigScreen : MyGuiScreenCubeBuilder
     {
+        private static readonly MethodInfo SearchItemTextboxTextChangedMethod = AccessTools.Method(typeof(MyGuiScreenToolbarConfigBase), "searchItemTexbox_TextChanged");
+        private static readonly FieldInfo FramesBeforeSearchEnabledField = AccessTools.Field(typeof(MyGuiScreenToolbarConfigBase), "m_framesBeforeSearchEnabled");
+
         private readonly CustomSearchCondition customSearchCondition = new CustomSearchCondition();
         private MyGuiControlLabel searchInfoLabel;
 
@@ -25,11 +30,48 @@ namespace ToolbarManager.Gui
         {
         }
 
-        public void SetSearchText(string text)
+        protected override void OnClosed()
         {
-            m_searchBox.SearchText = text;
-            m_searchBox.TextBox.MoveCarriageToEnd();
+            if (Config.Data.KeepBlockSearchText)
+            {
+                Config.Data.LatestBlockSearchText = SearchText;
+                Config.Save();
+            }
+
+            base.OnClosed();
         }
+
+        public override void LoadContent()
+        {
+            base.LoadContent();
+
+            if (!Config.Data.KeepBlockSearchText)
+                return;
+
+            var searchText = Config.Data.LatestBlockSearchText.Trim();
+            if (searchText.Length == 0)
+                return;
+
+            SetSearchText(Config.Data.LatestBlockSearchText.Trim());
+        }
+
+        private void SetSearchText(string text)
+        {
+            var framesBeforeSearchEnabledField = (int) FramesBeforeSearchEnabledField.GetValue(this);
+            if (framesBeforeSearchEnabledField > 0)
+            {
+                MyEntities.InvokeLater(() => SetSearchText(text));
+            }
+
+            m_searchBox.SearchText = text;
+            // m_searchBox.TextBox.MoveCarriageToEnd();
+            m_searchBox.TextBox.SelectAll();
+
+            // KEEN!!! This method works only if m_framesBeforeSearchEnabled <= 0
+            SearchItemTextboxTextChangedMethod.Invoke(this, new object[] { text });
+        }
+
+        private string SearchText => m_searchBox.SearchText ?? "";
 
         protected override void AddToolsAndAnimations(IMySearchCondition searchCondition)
         {

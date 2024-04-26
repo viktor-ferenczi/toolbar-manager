@@ -1,5 +1,7 @@
 ﻿using System.Reflection;
 using HarmonyLib;
+using Sandbox.Graphics.GUI;
+using ToolbarManager.Gui;
 using VRage.Plugins;
 
 namespace ToolbarManager
@@ -12,6 +14,8 @@ namespace ToolbarManager
         {
             var harmony = new Harmony("ToolbarManager");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
+
+            Config.Load();
         }
 
         public void Update()
@@ -20,6 +24,14 @@ namespace ToolbarManager
 
         public void Dispose()
         {
+        }
+
+        // ReSharper disable once UnusedMember.Global
+        public void OpenConfigDialog()
+        {
+            var screen = new PluginConfigDialog();
+            MyGuiSandbox.AddScreen(screen);
+            screen.Closed += (s, isUnloading) => Config.Save();
         }
     }
 }

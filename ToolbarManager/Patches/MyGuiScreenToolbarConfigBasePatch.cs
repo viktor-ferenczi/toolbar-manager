@@ -39,8 +39,18 @@ namespace ToolbarManager.Patches
         private static void OpenProfilesScreen(MyGuiControlButton obj)
         {
             var currentToolbar = MyToolbarComponent.CurrentToolbar;
-            if (currentToolbar != null)
-                MyGuiSandbox.AddScreen(new ProfilesDialog(currentToolbar));
+            if (currentToolbar == null)
+                return;
+
+            var profilesDialog = new ProfilesDialog(currentToolbar);
+            MyGuiSandbox.AddScreen(profilesDialog);
+            profilesDialog.Closed += OnProfilesDialogClosed;
+        }
+
+        private static void OnProfilesDialogClosed(MyGuiScreenBase dialog, bool isUnloading)
+        {
+            if (Config.Data.KeepProfileSearchText)
+                Config.Save();
         }
     }
 }
