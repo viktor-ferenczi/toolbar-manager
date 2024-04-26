@@ -79,6 +79,7 @@ namespace ToolbarManager.Gui
                 Position = profilesTable.Position + new Vector2(-0.45f, -0.036f),
                 Size = new Vector2(0.35f, 0.032f),
                 OriginAlign = MyGuiDrawAlignEnum.HORISONTAL_LEFT_AND_VERTICAL_CENTER,
+                SearchText = Config.Data.KeepProfileSearchText ? Config.Data.LatestProfileSearchText : ""
             };
             searchBox.OnTextChanged += OnSearchTextChange;
 
@@ -90,6 +91,8 @@ namespace ToolbarManager.Gui
         {
             RefreshTableRows();
             SelectRow(0);
+
+            Config.Data.LatestProfileSearchText = Config.Data.KeepProfileSearchText ? text : "";
         }
 
         private void OnItemSelected(MyGuiControlTable table, MyGuiControlTable.EventArgs args)
@@ -228,7 +231,14 @@ namespace ToolbarManager.Gui
 
         private void OnNew(MyGuiControlButton button)
         {
-            MyGuiSandbox.AddScreen(new NameDialog(SaveAsNewProfile, "Save toolbar", ""));
+            var defaultName = "";
+
+            if (Config.Data.KeepProfileSearchText)
+            {
+                defaultName = $"{searchBox.SearchText.Trim()} ";
+            }
+
+            MyGuiSandbox.AddScreen(new NameDialog(SaveAsNewProfile, "Save as new toolbar", defaultName, moveCursorToEnd: true));
         }
 
         private void OnUpdate(MyGuiControlButton obj)

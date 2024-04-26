@@ -131,12 +131,14 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Config.cs" />
         <Compile Include="Extensions\MyGuiSandboxExt.cs" />
         <Compile Include="Extensions\MyGuiScreenToolbarConfigBaseExt.cs" />
         <Compile Include="Extensions\PathExt.cs" />
         <Compile Include="Extensions\StringExt.cs" />
         <Compile Include="Gui\CustomSearchCondition.cs" />
         <Compile Include="Gui\CustomToolbarConfigScreen.cs" />
+        <Compile Include="Gui\PluginConfigDialog.cs" />
         <Compile Include="Gui\ProfilesDialog.cs" />
         <Compile Include="Gui\NameDialog.cs" />
         <Compile Include="Logic\Toolbar.cs" />
