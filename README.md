@@ -4,12 +4,14 @@ Toolbar Manager for the Space Engineers game.
 
 For support please [join the SE Mods Discord](https://discord.gg/PYPFPGf3Ca).
 
-Please consider [supporting my work on Patreon](https://www.patreon.com/semods).
+Please consider supporting my work on [Patreon](https://www.patreon.com/semods) or one time via [PayPal](https://www.paypal.com/paypalme/vferenczi/).
+
+*Thank you and enjoy!*
 
 ## Features
 
 This plugin allows for saving, loading and managing character and block
-toolbars. For example you can  quickly load a "standard" toolbar for
+toolbars. For example, you can  quickly load a "standard" toolbar for
 your character into any game (including multiplayer ones), which can
 greatly speed up your builds by using toolbar slots you have already
 memorized. It can also be used to fix the broken toolbars of your
@@ -93,8 +95,9 @@ After enabling the plugin it will be active for all single- and multiplayer worl
 *Enjoy!*
 
 ## Want to know more?
-- [SE Mods Discord](https://discord.gg/PYPFPGf3Ca)
-- [Plugin Loader Discord](https://discord.gg/6ETGRU3CzR)
+
+- [SE Mods Discord](https://discord.gg/PYPFPGf3Ca) FAQ, Troubleshooting, Support, Bug Reports, Discussion
+- [Plugin Loader Discord](https://discord.gg/6ETGRU3CzR) Everything about plugins
 - [YouTube Channel](https://www.youtube.com/channel/UCc5ar3cW9qoOgdBb1FM_rxQ)
 - [Source code](https://github.com/viktor-ferenczi/toolbar-manager)
 - [Bug reports](https://discord.gg/x3Z8Ug5YkQ)
