@@ -170,13 +170,13 @@ namespace ToolbarManager.Gui
             labelControl = new MyGuiControlLabel
             {
                 Text = label,
-                OriginAlign = MyGuiDrawAlignEnum.HORISONTAL_CENTER_AND_VERTICAL_TOP,
+                OriginAlign = MyGuiDrawAlignEnum.HORISONTAL_CENTER_AND_VERTICAL_CENTER,
                 Enabled = enabled,
             };
 
             checkboxControl = new MyGuiControlCheckbox(toolTip: tooltip)
             {
-                OriginAlign = MyGuiDrawAlignEnum.HORISONTAL_CENTER_AND_VERTICAL_TOP,
+                OriginAlign = MyGuiDrawAlignEnum.HORISONTAL_CENTER_AND_VERTICAL_CENTER,
                 IsChecked = value,
                 Enabled = enabled,
                 CanHaveFocus = enabled
@@ -199,20 +199,20 @@ namespace ToolbarManager.Gui
 
             var row = 1;
 
-            layoutTable.Add(mapBuildCockpitToCharacterLabel, MyAlignH.Left, MyAlignV.Top, row, 0);
-            layoutTable.Add(mapBuildCockpitToCharacterCheckbox, MyAlignH.Left, MyAlignV.Top, row, 1);
+            layoutTable.Add(mapBuildCockpitToCharacterLabel, MyAlignH.Left, MyAlignV.Center, row, 0);
+            layoutTable.Add(mapBuildCockpitToCharacterCheckbox, MyAlignH.Left, MyAlignV.Center, row, 1);
             row++;
 
-            layoutTable.Add(keepProfileSearchTextLabel, MyAlignH.Left, MyAlignV.Top, row, 0);
-            layoutTable.Add(keepProfileSearchTextCheckbox, MyAlignH.Left, MyAlignV.Top, row, 1);
+            layoutTable.Add(keepProfileSearchTextLabel, MyAlignH.Left, MyAlignV.Center, row, 0);
+            layoutTable.Add(keepProfileSearchTextCheckbox, MyAlignH.Left, MyAlignV.Center, row, 1);
             row++;
 
-            layoutTable.Add(keepBlockSearchTextLabel, MyAlignH.Left, MyAlignV.Top, row, 0);
-            layoutTable.Add(keepBlockSearchTextCheckbox, MyAlignH.Left, MyAlignV.Top, row, 1);
+            layoutTable.Add(keepBlockSearchTextLabel, MyAlignH.Left, MyAlignV.Center, row, 0);
+            layoutTable.Add(keepBlockSearchTextCheckbox, MyAlignH.Left, MyAlignV.Center, row, 1);
             row++;
 
-            layoutTable.Add(blockSearchKeyLabel, MyAlignH.Left, MyAlignV.Top, row, 0);
-            layoutTable.Add(blockSearchKeyButton, MyAlignH.Left, MyAlignV.Top, row, 1);
+            layoutTable.Add(blockSearchKeyLabel, MyAlignH.Left, MyAlignV.Center, row, 0);
+            layoutTable.Add(blockSearchKeyButton, MyAlignH.Left, MyAlignV.Center, row, 1);
             row++;
 
             layoutTable.Add(closeButton, MyAlignH.Center, MyAlignV.Center, row, 0, colSpan: 2);
