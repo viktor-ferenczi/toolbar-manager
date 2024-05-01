@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using LitJson;
 using Sandbox.Game.Screens.Helpers;
 using ToolbarManager.Extensions;
 using VRage.FileSystem;
+using VRage.Game;
 using VRage.Utils;
 
 namespace ToolbarManager.Logic
@@ -24,7 +26,26 @@ namespace ToolbarManager.Logic
         {
             this.currentToolbar = currentToolbar;
 
-            profileDir = Path.Combine(PluginDataDir, currentToolbar.ToolbarType.ToString());
+            var toolbarType = currentToolbar.ToolbarType;
+            profileDir = Path.Combine(PluginDataDir, toolbarType.ToString());
+
+            // If there are no BuildCockpit profiles defined, then use the Character profile folder instead.
+            // This is to prevent players from thinking they lost all of their character profiles while trying
+            // to use the build cockpit mode (Ctrl-G).
+            if (Config.Data.UseCharacterProfilesForBuildCockpit &&
+                toolbarType == MyToolbarType.BuildCockpit)
+            {
+                var hasAnyProfiles = Directory.Exists(profileDir) &&
+                                     Directory.EnumerateFiles(profileDir)
+                                         .Any(path => path.EndsWith(".xml") || path.EndsWith(".json"));
+
+                if (!hasAnyProfiles && Config.Data.UseCharacterProfilesForBuildCockpit)
+                {
+                    toolbarType = MyToolbarType.Character;
+                    profileDir = Path.Combine(PluginDataDir, toolbarType.ToString());
+                }
+            }
+
             Directory.CreateDirectory(profileDir);
 
             backupDir = Path.Combine(profileDir, "Backup");

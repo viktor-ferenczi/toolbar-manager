@@ -1,10 +1,13 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using HarmonyLib;
 using Sandbox.Game.Entities.Character;
 using Sandbox.Game.Gui;
+using Sandbox.Game.Screens.Helpers;
 using Sandbox.Game.World;
 using Sandbox.Graphics.GUI;
 using ToolbarManager.Gui;
+using VRage.Game;
 using VRage.Input;
 
 namespace ToolbarManager.Patches
@@ -18,17 +21,26 @@ namespace ToolbarManager.Patches
         [HarmonyPatch(nameof(MyGuiScreenGamePlay.HandleUnhandledInput))]
         public static bool HandleUnhandledInputPrefix()
         {
-            if (MyGuiScreenGamePlay.ActiveGameplayScreen != null || !(MySession.Static.ControlledEntity is MyCharacter))
+            var myInput = MyInput.Static;
+            if (!myInput.IsNewKeyPressed(Config.Data.BlockSearchKey))
                 return true;
 
-            var myInput = MyInput.Static;
-            if (myInput.IsNewKeyPressed(Config.Data.BlockSearchKey))
+            if (MyGuiScreenGamePlay.ActiveGameplayScreen != null)
+                return true;
+
+            var toolbarType = MyToolbarComponent.CurrentToolbar?.ToolbarType;
+            switch (toolbarType)
             {
-                OpenCubeBuilder();
-                return false;
+                case MyToolbarType.Character:
+                case MyToolbarType.BuildCockpit:
+                    break;
+                default:
+                    return true;
             }
 
-            return true;
+            OpenCubeBuilder();
+            return false;
+
         }
 
         private static void OpenCubeBuilder()

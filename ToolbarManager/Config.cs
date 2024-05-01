@@ -9,12 +9,18 @@ namespace ToolbarManager
 {
     public class PluginConfig
     {
+        // Building from cockpit (Ctrl-G) uses the character profiles
+        public bool UseCharacterProfilesForBuildCockpit = true;
+
+        // Keep the search text between subsequent uses of the Profile dialog
         public bool KeepProfileSearchText = false;
         public string LatestProfileSearchText = "";
 
+        // Keep the search text between subsequent uses of the block search
         public bool KeepBlockSearchText = false;
         public string LatestBlockSearchText = "";
 
+        // Key to start block search
         public MyKeys BlockSearchKey = MyKeys.OemPipe;
     }
 
