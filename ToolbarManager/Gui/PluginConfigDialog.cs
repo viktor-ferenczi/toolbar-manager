@@ -19,11 +19,14 @@ namespace ToolbarManager.Gui
 
         private MyLayoutTable layoutTable;
 
-        private MyGuiControlLabel keepBlockSearchTextLabel;
-        private MyGuiControlCheckbox keepBlockSearchTextCheckbox;
+        private MyGuiControlLabel mapBuildCockpitToCharacterLabel;
+        private MyGuiControlCheckbox mapBuildCockpitToCharacterCheckbox;
 
         private MyGuiControlLabel keepProfileSearchTextLabel;
         private MyGuiControlCheckbox keepProfileSearchTextCheckbox;
+
+        private MyGuiControlLabel keepBlockSearchTextLabel;
+        private MyGuiControlCheckbox keepBlockSearchTextCheckbox;
 
         private MyControl blockSearchKeyControl;
         private MyGuiControlLabel blockSearchKeyLabel;
@@ -31,7 +34,7 @@ namespace ToolbarManager.Gui
 
         private MyGuiControlButton closeButton;
 
-        public PluginConfigDialog() : base(new Vector2(0.5f, 0.5f), MyGuiConstants.SCREEN_BACKGROUND_COLOR, new Vector2(0.5f, 0.5f), false, null, MySandboxGame.Config.UIBkOpacity, MySandboxGame.Config.UIOpacity)
+        public PluginConfigDialog() : base(new Vector2(0.5f, 0.6f), MyGuiConstants.SCREEN_BACKGROUND_COLOR, new Vector2(0.5f, 0.5f), false, null, MySandboxGame.Config.UIBkOpacity, MySandboxGame.Config.UIOpacity)
         {
             EnabledBackgroundFade = true;
             m_closeOnEsc = true;
@@ -58,6 +61,14 @@ namespace ToolbarManager.Gui
         private void CreateControls()
         {
             AddCaption(Caption);
+
+            CreateCheckbox(
+                out mapBuildCockpitToCharacterLabel,
+                out mapBuildCockpitToCharacterCheckbox,
+                Config.Data.UseCharacterProfilesForBuildCockpit,
+                value => { Config.Data.UseCharacterProfilesForBuildCockpit = value; },
+                "Use character profiles for build cockpit",
+                "Building from cockpit (Ctrl-G) uses the character profiles.");
 
             CreateCheckbox(
                 out keepProfileSearchTextLabel,
@@ -159,13 +170,13 @@ namespace ToolbarManager.Gui
             labelControl = new MyGuiControlLabel
             {
                 Text = label,
-                OriginAlign = MyGuiDrawAlignEnum.HORISONTAL_CENTER_AND_VERTICAL_TOP,
+                OriginAlign = MyGuiDrawAlignEnum.HORISONTAL_CENTER_AND_VERTICAL_CENTER,
                 Enabled = enabled,
             };
 
             checkboxControl = new MyGuiControlCheckbox(toolTip: tooltip)
             {
-                OriginAlign = MyGuiDrawAlignEnum.HORISONTAL_CENTER_AND_VERTICAL_TOP,
+                OriginAlign = MyGuiDrawAlignEnum.HORISONTAL_CENTER_AND_VERTICAL_CENTER,
                 IsChecked = value,
                 Enabled = enabled,
                 CanHaveFocus = enabled
@@ -182,22 +193,26 @@ namespace ToolbarManager.Gui
 
         private void LayoutControls()
         {
-            layoutTable = new MyLayoutTable(this, new Vector2(-0.2f, -0.25f), new Vector2(0.20f, 0.25f));
+            layoutTable = new MyLayoutTable(this, new Vector2(-0.2f, -0.3f), new Vector2(0.20f, 0.3f));
             layoutTable.SetColumnWidths(500f, 500f);
-            layoutTable.SetRowHeights(150f, 90f, 90f, 90f, 90f, 180f);
+            layoutTable.SetRowHeights(180f, 90f, 90f, 90f, 90f, 90f, 180f);
 
             var row = 1;
 
-            layoutTable.Add(keepProfileSearchTextLabel, MyAlignH.Left, MyAlignV.Top, row, 0);
-            layoutTable.Add(keepProfileSearchTextCheckbox, MyAlignH.Left, MyAlignV.Top, row, 1);
+            layoutTable.Add(mapBuildCockpitToCharacterLabel, MyAlignH.Left, MyAlignV.Center, row, 0);
+            layoutTable.Add(mapBuildCockpitToCharacterCheckbox, MyAlignH.Left, MyAlignV.Center, row, 1);
             row++;
 
-            layoutTable.Add(keepBlockSearchTextLabel, MyAlignH.Left, MyAlignV.Top, row, 0);
-            layoutTable.Add(keepBlockSearchTextCheckbox, MyAlignH.Left, MyAlignV.Top, row, 1);
+            layoutTable.Add(keepProfileSearchTextLabel, MyAlignH.Left, MyAlignV.Center, row, 0);
+            layoutTable.Add(keepProfileSearchTextCheckbox, MyAlignH.Left, MyAlignV.Center, row, 1);
             row++;
 
-            layoutTable.Add(blockSearchKeyLabel, MyAlignH.Left, MyAlignV.Top, row, 0);
-            layoutTable.Add(blockSearchKeyButton, MyAlignH.Left, MyAlignV.Top, row, 1);
+            layoutTable.Add(keepBlockSearchTextLabel, MyAlignH.Left, MyAlignV.Center, row, 0);
+            layoutTable.Add(keepBlockSearchTextCheckbox, MyAlignH.Left, MyAlignV.Center, row, 1);
+            row++;
+
+            layoutTable.Add(blockSearchKeyLabel, MyAlignH.Left, MyAlignV.Center, row, 0);
+            layoutTable.Add(blockSearchKeyButton, MyAlignH.Left, MyAlignV.Center, row, 1);
             row++;
 
             layoutTable.Add(closeButton, MyAlignH.Center, MyAlignV.Center, row, 0, colSpan: 2);
