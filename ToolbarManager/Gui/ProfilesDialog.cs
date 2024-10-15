@@ -142,7 +142,10 @@ namespace ToolbarManager.Gui
 
         private int CellTextComparison(MyGuiControlTable.Cell x, MyGuiControlTable.Cell y)
         {
-            return TextComparison(x.Text, y.Text);
+            if (x == null)
+                return y == null ? 0 : 1;
+            
+            return y == null ? -1 : TextComparison(x.Text, y.Text);
         }
 
         private int TextComparison(StringBuilder x, StringBuilder y)
