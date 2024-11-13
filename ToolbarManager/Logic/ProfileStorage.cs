@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using LitJson;
@@ -138,11 +139,16 @@ namespace ToolbarManager.Logic
             var oldJsonPath = FormatProfilePath(oldName, "json");
             var newJsonPath = FormatProfilePath(newName, "json");
 
-            if (File.Exists(newXmlPath))
-                File.Delete(newXmlPath);
+            // File names in Windows are case-insensitive.
+            // Do NOT delete it if the name change is only about letter casing.
+            if (!oldName.EqualsIgnoreCase(newName))
+            {
+                if (File.Exists(newXmlPath))
+                    File.Delete(newXmlPath);
 
-            if (File.Exists(newJsonPath))
-                File.Delete(newJsonPath);
+                if (File.Exists(newJsonPath))
+                    File.Delete(newJsonPath);
+            }
 
             File.Move(oldXmlPath, newXmlPath);
             File.Move(oldJsonPath, newJsonPath);

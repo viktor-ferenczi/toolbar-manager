@@ -1,4 +1,6 @@
-﻿namespace ToolbarManager.Extensions
+﻿using System;
+
+namespace ToolbarManager.Extensions
 {
     public static class StringExt
     {
@@ -16,6 +18,14 @@
             }
 
             return true;
+        }
+
+        public static bool EqualsIgnoreCase(this string a, string b)
+        {
+            if (a == null || b == null)
+                return false;
+
+            return string.Equals(a, b, StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }
