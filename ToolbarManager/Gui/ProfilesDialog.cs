@@ -370,7 +370,7 @@ namespace ToolbarManager.Gui
         private void OnNewNameSpecified(string oldName, string newName)
         {
             newName = newName.SanitizeFileName();
-            if (storage.HasProfile(newName))
+            if (storage.HasProfile(newName) && !oldName.EqualsIgnoreCase(newName))
             {
                 MyGuiSandbox.AddScreen(
                     MyGuiSandbox.CreateMessageBox(buttonType: MyMessageBoxButtonsType.YES_NO,
