@@ -106,36 +106,39 @@ After enabling the plugin it will be active for all single- and multiplayer worl
 
 ### Patreon Supporters
 
+_in alphabetical order_
+
 #### Admiral level
 - BetaMark
+- Casinost
 - Mordith - Guardians SE
 - Robot10
-- Casinost
 - wafoxxx
 
 #### Captain level
 - Diggz
-- lazul
 - jiringgot
+- Jimbo
 - Kam Solastor
+- lazul
+- Linux123123
+- Lotan
+- Lurking StarCpt
 - NeonDrip
 - NeVaR
 - opesoorry
-- NeVaR
-- Jimbo
-- Lotan
 
 #### Testers
 - Avaness
 - mkaito
 
 ### Creators
-- avaness - Plugin Loader, Racing Display
-- Mordith - Guardians SE
-- Mike Dude - Guardians SE
-- SwiftyTech - Stargate Dimensions
+- avaness - Plugin Loader
 - Fred XVI - Racing maps
 - Kamikaze - M&M mod
 - LTP
+- Mordith - Guardians SE
+- Mike Dude - Guardians SE
+- SwiftyTech - Stargate Dimensions
 
-**Thank you very much for all your support and hard work on testing!**
+**Thank you very much for all your support and testing effort!**
