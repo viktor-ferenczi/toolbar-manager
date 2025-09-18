@@ -1,10 +1,7 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
 using HarmonyLib;
-using Sandbox.Game.Entities.Character;
 using Sandbox.Game.Gui;
 using Sandbox.Game.Screens.Helpers;
-using Sandbox.Game.World;
 using Sandbox.Graphics.GUI;
 using ToolbarManager.Gui;
 using VRage.Game;
@@ -22,7 +19,7 @@ namespace ToolbarManager.Patches
         public static bool HandleUnhandledInputPrefix()
         {
             var myInput = MyInput.Static;
-            if (!myInput.IsNewKeyPressed(Config.Data.BlockSearchKey))
+            if (!myInput.IsNewKeyPressed(Config.Current.BlockSearchKey.Key))
                 return true;
 
             if (MyGuiScreenGamePlay.ActiveGameplayScreen != null)
@@ -40,7 +37,6 @@ namespace ToolbarManager.Patches
 
             OpenCubeBuilder();
             return false;
-
         }
 
         private static void OpenCubeBuilder()

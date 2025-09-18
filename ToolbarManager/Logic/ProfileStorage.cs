@@ -33,14 +33,14 @@ namespace ToolbarManager.Logic
             // If there are no BuildCockpit profiles defined, then use the Character profile folder instead.
             // This is to prevent players from thinking they lost all of their character profiles while trying
             // to use the build cockpit mode (Ctrl-G).
-            if (Config.Data.UseCharacterProfilesForBuildCockpit &&
+            if (Config.Current.UseCharacterProfilesForBuildCockpit &&
                 toolbarType == MyToolbarType.BuildCockpit)
             {
                 var hasAnyProfiles = Directory.Exists(profileDir) &&
                                      Directory.EnumerateFiles(profileDir)
                                          .Any(path => path.EndsWith(".xml") || path.EndsWith(".json"));
 
-                if (!hasAnyProfiles && Config.Data.UseCharacterProfilesForBuildCockpit)
+                if (!hasAnyProfiles && Config.Current.UseCharacterProfilesForBuildCockpit)
                 {
                     toolbarType = MyToolbarType.Character;
                     profileDir = Path.Combine(PluginDataDir, toolbarType.ToString());
@@ -221,6 +221,7 @@ namespace ToolbarManager.Logic
                         break;
                     }
                 }
+
                 if (overwritten != null)
                     File.Delete(newBackup);
             }

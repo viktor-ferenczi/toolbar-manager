@@ -31,9 +31,9 @@ namespace ToolbarManager.Gui
 
         public override void OnClosed()
         {
-            if (Config.Data.KeepBlockSearchText)
+            if (Config.Current.KeepBlockSearchText)
             {
-                Config.Data.LatestBlockSearchText = SearchText;
+                Config.Current.LatestBlockSearchText = SearchText;
                 Config.Save();
             }
 
@@ -44,19 +44,19 @@ namespace ToolbarManager.Gui
         {
             base.LoadContent();
 
-            if (!Config.Data.KeepBlockSearchText)
+            if (!Config.Current.KeepBlockSearchText)
                 return;
 
-            var searchText = Config.Data.LatestBlockSearchText.Trim();
+            var searchText = Config.Current.LatestBlockSearchText.Trim();
             if (searchText.Length == 0)
                 return;
 
-            SetSearchText(Config.Data.LatestBlockSearchText.Trim());
+            SetSearchText(Config.Current.LatestBlockSearchText.Trim());
         }
 
         private void SetSearchText(string text)
         {
-            var framesBeforeSearchEnabledField = (int) FramesBeforeSearchEnabledField.GetValue(this);
+            var framesBeforeSearchEnabledField = (int)FramesBeforeSearchEnabledField.GetValue(this);
             if (framesBeforeSearchEnabledField > 0)
             {
                 MyEntities.InvokeLater(() => SetSearchText(text));
