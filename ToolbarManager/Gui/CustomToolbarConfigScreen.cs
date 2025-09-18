@@ -5,7 +5,6 @@ using Sandbox.Game.Entities;
 using Sandbox.Game.Gui;
 using Sandbox.Game.Screens.Helpers;
 using Sandbox.Graphics.GUI;
-using ToolbarManager.Extensions;
 using VRage.Game;
 using VRage.Input;
 using VRageMath;
@@ -30,7 +29,7 @@ namespace ToolbarManager.Gui
         {
         }
 
-        protected override void OnClosed()
+        public override void OnClosed()
         {
             if (Config.Data.KeepBlockSearchText)
             {
@@ -73,7 +72,7 @@ namespace ToolbarManager.Gui
 
         private string SearchText => m_searchBox.SearchText ?? "";
 
-        protected override void AddToolsAndAnimations(IMySearchCondition searchCondition)
+        public override void AddToolsAndAnimations(IMySearchCondition searchCondition)
         {
             if (searchCondition == m_nameSearchCondition)
             {
@@ -85,7 +84,7 @@ namespace ToolbarManager.Gui
             base.AddToolsAndAnimations(searchCondition);
         }
 
-        protected override void UpdateGridBlocksBySearchCondition(IMySearchCondition searchCondition)
+        public override void UpdateGridBlocksBySearchCondition(IMySearchCondition searchCondition)
         {
             if (searchCondition == m_nameSearchCondition)
             {
