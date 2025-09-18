@@ -192,7 +192,6 @@
         <PublicizerLogFilePath>$(TargetDir)/Krafs.Publicizer.log</PublicizerLogFilePath>
     </PropertyGroup>
     <ItemGroup>
-        <Publicize Include="Sandbox.Game" IncludeCompilerGeneratedMembers="false"/>
-        <Publicize Include="SpaceEngineers.Game" IncludeCompilerGeneratedMembers="false"/>
+        <Publicize Include="Sandbox.Game" IncludeCompilerGeneratedMembers="false" IncludeVirtualMembers="false" />
     </ItemGroup>
 </Project>

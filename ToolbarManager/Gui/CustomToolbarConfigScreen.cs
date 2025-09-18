@@ -29,7 +29,7 @@ namespace ToolbarManager.Gui
         {
         }
 
-        public override void OnClosed()
+        protected override void OnClosed()
         {
             if (Config.Current.KeepBlockSearchText)
             {
@@ -72,7 +72,7 @@ namespace ToolbarManager.Gui
 
         private string SearchText => m_searchBox.SearchText ?? "";
 
-        public override void AddToolsAndAnimations(IMySearchCondition searchCondition)
+        protected override void AddToolsAndAnimations(IMySearchCondition searchCondition)
         {
             if (searchCondition == m_nameSearchCondition)
             {
@@ -84,7 +84,7 @@ namespace ToolbarManager.Gui
             base.AddToolsAndAnimations(searchCondition);
         }
 
-        public override void UpdateGridBlocksBySearchCondition(IMySearchCondition searchCondition)
+        protected override void UpdateGridBlocksBySearchCondition(IMySearchCondition searchCondition)
         {
             if (searchCondition == m_nameSearchCondition)
             {
