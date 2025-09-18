@@ -32,8 +32,8 @@
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
-        <Reference Include="0Harmony, Version=2.3.3.0, Culture=neutral, processorArchitecture=MSIL">
-          <HintPath>..\packages\Lib.Harmony.2.3.3\lib\net48\0Harmony.dll</HintPath>
+        <Reference Include="0Harmony, Version=2.3.6.0, Culture=neutral, processorArchitecture=MSIL">
+          <HintPath>..\packages\Lib.Harmony.2.3.6\lib\net48\0Harmony.dll</HintPath>
         </Reference>
         <Reference Include="Sandbox.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
           <HintPath>..\Bin64\Sandbox.Common.dll</HintPath>
