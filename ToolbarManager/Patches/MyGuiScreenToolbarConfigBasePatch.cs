@@ -49,7 +49,7 @@ namespace ToolbarManager.Patches
 
         private static void OnProfilesDialogClosed(MyGuiScreenBase dialog, bool isUnloading)
         {
-            if (Config.Data.KeepProfileSearchText)
+            if (Config.Current.KeepProfileSearchText)
                 Config.Save();
         }
     }

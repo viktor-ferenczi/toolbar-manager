@@ -76,6 +76,7 @@ namespace ToolbarManager.Gui
             {
                 nameBox.SelectAll();
             }
+
             Controls.Add(nameBox);
 
             okButton = new MyGuiControlButton(originAlign: MyGuiDrawAlignEnum.HORISONTAL_RIGHT_AND_VERTICAL_CENTER, text: MyTexts.Get(MyCommonTexts.Ok), onButtonClick: OnOk);

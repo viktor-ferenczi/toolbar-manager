@@ -11,7 +11,7 @@ Please consider supporting my work on [Patreon](https://www.patreon.com/semods) 
 ## Features
 
 This plugin allows for saving, loading and managing character and block
-toolbars. For example, you can  quickly load a "standard" toolbar for
+toolbars. For example, you can quickly load a "standard" toolbar for
 your character into any game (including multiplayer ones), which can
 greatly speed up your builds by using toolbar slots you have already
 memorized. It can also be used to fix the broken toolbars of your
@@ -29,7 +29,7 @@ toolbar profiles.
 
 **New** saves the currently open toolbar as a new profile.
 
-**Load** overwrites your currently open toolbar from the selected profile. 
+**Load** overwrites your currently open toolbar from the selected profile.
 
 **Merge** loads only the used slots from the profile and leaves the rest of them as is.
 
@@ -50,8 +50,8 @@ cleaned up after 90 days, but only when a profile is deleted the next time.
 
 ### Quick block selection
 
-Press the `BACKSLASH` or `PIPE` key (on English keyboard) to open the quick 
-block search menu. It works the same way as the original menu, but the search 
+Press the `BACKSLASH` or `PIPE` key (on English keyboard) to open the quick
+block search menu. It works the same way as the original menu, but the search
 rules are optimized to find blocks primarily by capital letters and digits:
 
 - `AB` **Armor Blocks**
@@ -61,28 +61,30 @@ rules are optimized to find blocks primarily by capital letters and digits:
 - `LHT` **Large Hydrogen Thrusters**
 - `211` **All 2x1x1 armor blocks**
 
-Adding the subsequent lower case letters after an upper case one allows 
+Adding the subsequent lower case letters after an upper case one allows
 for narrowing down in case of ambiguity:
 
 - `PH` **Parachute Hatch** and **Point Hand**
 - `PHat` **Parachute Hatch** only
 
 The order of characters must match exactly. Lower case characters and
-space are skipped after a matching upper chase character or digit. 
+space are skipped after a matching upper chase character or digit.
 
 Separating multiple search patterns by space is not supported, currently.
 
 ### Planned features
+
 - Multiplying the available toolbar pages using new hotkeys and saved toolbars
 - Restricting the load/merge operations to certain toolbar pages
 - Moving and swapping toolbar items using mouse drag&drop
 - Moving toolbar items between toolbar pages
 - Swapping toolbar pages
 
-Please join the Discord (see below) and tell me which one you would use, 
-so they can be fast-tracked.  
+Please join the Discord (see below) and tell me which one you would use,
+so they can be fast-tracked.
 
 ## Installation
+
 1. Exit from Space Engineers
 2. Install the [Plugin Loader](https://github.com/sepluginloader/SpaceEngineersLauncher)
 3. Start Space Engineers
@@ -109,6 +111,7 @@ After enabling the plugin it will be active for all single- and multiplayer worl
 _in alphabetical order_
 
 #### Admiral level
+
 - BetaMark
 - Casinost
 - Mordith - Guardians SE
@@ -116,6 +119,7 @@ _in alphabetical order_
 - wafoxxx
 
 #### Captain level
+
 - Diggz
 - jiringgot
 - Jimbo
@@ -129,10 +133,12 @@ _in alphabetical order_
 - opesoorry
 
 #### Testers
+
 - Avaness
 - mkaito
 
 ### Creators
+
 - avaness - Plugin Loader
 - Fred XVI - Racing maps
 - Kamikaze - M&M mod

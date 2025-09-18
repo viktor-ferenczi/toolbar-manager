@@ -5,7 +5,6 @@ using Sandbox.Game.Entities;
 using Sandbox.Game.Gui;
 using Sandbox.Game.Screens.Helpers;
 using Sandbox.Graphics.GUI;
-using ToolbarManager.Extensions;
 using VRage.Game;
 using VRage.Input;
 using VRageMath;
@@ -30,11 +29,11 @@ namespace ToolbarManager.Gui
         {
         }
 
-        protected override void OnClosed()
+        public override void OnClosed()
         {
-            if (Config.Data.KeepBlockSearchText)
+            if (Config.Current.KeepBlockSearchText)
             {
-                Config.Data.LatestBlockSearchText = SearchText;
+                Config.Current.LatestBlockSearchText = SearchText;
                 Config.Save();
             }
 
@@ -45,19 +44,19 @@ namespace ToolbarManager.Gui
         {
             base.LoadContent();
 
-            if (!Config.Data.KeepBlockSearchText)
+            if (!Config.Current.KeepBlockSearchText)
                 return;
 
-            var searchText = Config.Data.LatestBlockSearchText.Trim();
+            var searchText = Config.Current.LatestBlockSearchText.Trim();
             if (searchText.Length == 0)
                 return;
 
-            SetSearchText(Config.Data.LatestBlockSearchText.Trim());
+            SetSearchText(Config.Current.LatestBlockSearchText.Trim());
         }
 
         private void SetSearchText(string text)
         {
-            var framesBeforeSearchEnabledField = (int) FramesBeforeSearchEnabledField.GetValue(this);
+            var framesBeforeSearchEnabledField = (int)FramesBeforeSearchEnabledField.GetValue(this);
             if (framesBeforeSearchEnabledField > 0)
             {
                 MyEntities.InvokeLater(() => SetSearchText(text));
@@ -73,7 +72,7 @@ namespace ToolbarManager.Gui
 
         private string SearchText => m_searchBox.SearchText ?? "";
 
-        protected override void AddToolsAndAnimations(IMySearchCondition searchCondition)
+        public override void AddToolsAndAnimations(IMySearchCondition searchCondition)
         {
             if (searchCondition == m_nameSearchCondition)
             {
@@ -85,7 +84,7 @@ namespace ToolbarManager.Gui
             base.AddToolsAndAnimations(searchCondition);
         }
 
-        protected override void UpdateGridBlocksBySearchCondition(IMySearchCondition searchCondition)
+        public override void UpdateGridBlocksBySearchCondition(IMySearchCondition searchCondition)
         {
             if (searchCondition == m_nameSearchCondition)
             {

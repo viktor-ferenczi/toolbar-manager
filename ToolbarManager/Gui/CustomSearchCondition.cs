@@ -67,7 +67,7 @@ namespace ToolbarManager.Gui
                     // Digits and upper case characters allow skipping characters
                     if (su)
                         continue;
-                    
+
                     // Anything else matched exactly
                     break;
                 }

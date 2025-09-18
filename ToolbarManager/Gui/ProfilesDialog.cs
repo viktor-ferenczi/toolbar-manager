@@ -79,7 +79,7 @@ namespace ToolbarManager.Gui
                 Position = profilesTable.Position + new Vector2(-0.45f, -0.036f),
                 Size = new Vector2(0.35f, 0.032f),
                 OriginAlign = MyGuiDrawAlignEnum.HORISONTAL_LEFT_AND_VERTICAL_CENTER,
-                SearchText = Config.Data.KeepProfileSearchText ? Config.Data.LatestProfileSearchText : ""
+                SearchText = Config.Current.KeepProfileSearchText ? Config.Current.LatestProfileSearchText : ""
             };
             searchBox.OnTextChanged += OnSearchTextChange;
 
@@ -92,7 +92,7 @@ namespace ToolbarManager.Gui
             RefreshTableRows();
             SelectRow(0);
 
-            Config.Data.LatestProfileSearchText = Config.Data.KeepProfileSearchText ? text : "";
+            Config.Current.LatestProfileSearchText = Config.Current.KeepProfileSearchText ? text : "";
         }
 
         private void OnItemSelected(MyGuiControlTable table, MyGuiControlTable.EventArgs args)
@@ -124,6 +124,7 @@ namespace ToolbarManager.Gui
                 MyGuiSandboxExt.Show("Failed to load toolbar", "Error");
                 return false;
             }
+
             return true;
         }
 
@@ -144,7 +145,7 @@ namespace ToolbarManager.Gui
         {
             if (x == null)
                 return y == null ? 0 : 1;
-            
+
             return y == null ? -1 : TextComparison(x.Text, y.Text);
         }
 
@@ -236,7 +237,7 @@ namespace ToolbarManager.Gui
         {
             var defaultName = "";
 
-            if (Config.Data.KeepProfileSearchText)
+            if (Config.Current.KeepProfileSearchText)
             {
                 defaultName = $"{searchBox.SearchText.Trim()} ";
             }
@@ -357,7 +358,7 @@ namespace ToolbarManager.Gui
                     var page = i / 9;
                     if (page > 8)
                         break;
-                    if (!(bool) slots[i]["IsEmpty"])
+                    if (!(bool)slots[i]["IsEmpty"])
                         usedSlotCounts[page]++;
                 }
             }
