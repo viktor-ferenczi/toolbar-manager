@@ -14,11 +14,13 @@ namespace ToolbarManager.Patches
         [HarmonyPatch(nameof(MyGuiControlToolbar.HandleDragAndDrop))]
         private static bool HandleDragAndDropPrefix(MyGuiControlToolbar __instance, MyDragAndDropEventArgs eventArgs)
         {
+            // Prevent clearing the toolbar slot on cancelling drag&drop by releasing the mouse outside the toolbar
             if (eventArgs.DropTo == null || !__instance.IsToolbarGrid(eventArgs.DropTo.Grid))
-            {
-                // Prevent clearing the toolbar slot on cancelling drag&drop by releasing the mouse outside the toolbar
                 return false;
-            }
+
+            // Prevent dropping something on the very last "hand" slot
+            if (eventArgs.DropTo.ItemIndex == 9)
+                return false;
 
             return true;
         }

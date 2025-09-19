@@ -36,7 +36,16 @@ namespace ToolbarManager.Patches
             __instance.Elements.Add(button);
             
             // Allow for drag&drop reordering of toolbar items on the currently selected toolbar page
-            __instance.m_toolbarControl.m_toolbarItemsGrid.ItemDragged += __instance.grid_OnDrag;
+            __instance.m_toolbarControl.m_toolbarItemsGrid.ItemDragged += (sender, eventArgs) => OnItemDragged(__instance, sender, eventArgs); 
+        }
+
+        private static void OnItemDragged(MyGuiScreenToolbarConfigBase myGuiScreenToolbarConfigBase, MyGuiControlGrid sender, MyGuiControlGrid.EventArgs eventArgs)
+        {
+            // Disallow dragging the very last "hand" slot (it would be meaningless and would crash)
+            if (eventArgs.ItemIndex == 9)
+                return;
+
+            myGuiScreenToolbarConfigBase.StartDragging(MyDropHandleType.MouseRelease, sender, ref eventArgs);
         }
 
         private static void OpenProfilesScreen(MyGuiControlButton obj)
