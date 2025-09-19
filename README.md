@@ -48,6 +48,17 @@ Up to 6 backups of each profile is kept, even after deleting the profile. Renami
 also renames the backup files. Orphaned backup files (with the main profile deleted) are
 cleaned up after 90 days, but only when a profile is deleted the next time.
 
+### Toolbar editing
+
+This plugin adds a new "Staging" area in the G menu, which allows for the convenient reordering
+of toolbar items, including moving them between toolbar pages.
+
+The staging areas are preserved for the character and each block with a toolbar in-memory during
+gameplay, but **not saved** over sessions (world loads) and game restarts. Please save your
+toolbars into profiles after editing.
+
+You can disable the staging area in the plugin's configuration, should it cause any issues.
+
 ### Quick block selection
 
 Press the `BACKSLASH` or `PIPE` key (on English keyboard) to open the quick
@@ -71,6 +82,8 @@ The order of characters must match exactly. Lower case characters and
 space are skipped after a matching upper chase character or digit.
 
 Separating multiple search patterns by space is not supported, currently.
+
+You can change the hotkey in the plugin's configuration.
 
 ### Planned features
 
