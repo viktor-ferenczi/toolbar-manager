@@ -124,11 +124,8 @@ namespace ToolbarManager.Patches
             
             __instance.m_dragAndDrop.ItemDropped += (sender, eventArgs) => OnStagingGridOnDrop(stagingGrid, sender, eventArgs);
             
-            stagingGrid.ItemDoubleClicked += (sender, eventArgs) => OnStagingGridItemDoubleClicked(__instance, sender, eventArgs);
             stagingGrid.ItemClicked += (sender, eventArgs) => OnStagingGridItemClicked(__instance, sender, eventArgs);
             stagingGrid.ItemDragged += (sender, eventArgs) => OnStagingGridOnDrag(__instance, sender, eventArgs);
-            stagingGrid.ItemAccepted += (sender, eventArgs) => OnStagingGridItemAccepted(__instance, sender, eventArgs);
-            stagingGrid.MouseOverIndexChanged += (sender, eventArgs) => OnStagingGridMouseOverIndexChanged(__instance, sender, eventArgs);
         }
 
         [HarmonyPrefix]
@@ -227,11 +224,6 @@ namespace ToolbarManager.Patches
             stagingGrid.SetItemAt(eventArgs.DropTo.ItemIndex, clone);
         }
 
-        private static void OnStagingGridItemDoubleClicked(MyGuiScreenToolbarConfigBase myGuiScreenToolbarConfigBase, MyGuiControlGrid stagingGrid, MyGuiControlGrid.EventArgs eventArgs)
-        {
-            Console.WriteLine("!");
-        }
-
         private static void OnStagingGridItemClicked(MyGuiScreenToolbarConfigBase myGuiScreenToolbarConfigBase, MyGuiControlGrid stagingGrid, MyGuiControlGrid.EventArgs eventArgs)
         {
             if (eventArgs.Button == MySharedButtonsEnum.Secondary)
@@ -252,16 +244,6 @@ namespace ToolbarManager.Patches
             myGuiScreenToolbarConfigBase.m_dragAndDrop.StartDragging(MyDropHandleType.MouseRelease, eventArgs.Button, item, info, false);
             
             stagingGrid.HideToolTip();
-        }
-
-        private static void OnStagingGridItemAccepted(MyGuiScreenToolbarConfigBase myGuiScreenToolbarConfigBase, MyGuiControlGrid stagingGrid, MyGuiControlGrid.EventArgs eventArgs)
-        {
-            Console.WriteLine("!");
-        }
-
-        private static void OnStagingGridMouseOverIndexChanged(MyGuiScreenToolbarConfigBase myGuiScreenToolbarConfigBase, MyGuiControlGrid stagingGrid, MyGuiControlGrid.EventArgs eventArgs)
-        {
-            // myGuiScreenToolbarConfigBase.grid_MouseOverIndexChanged(stagingGrid, eventArgs);
         }
 
         private static void OnToolbarItemDragged(MyGuiScreenToolbarConfigBase myGuiScreenToolbarConfigBase, MyGuiControlGrid sender, MyGuiControlGrid.EventArgs eventArgs)
