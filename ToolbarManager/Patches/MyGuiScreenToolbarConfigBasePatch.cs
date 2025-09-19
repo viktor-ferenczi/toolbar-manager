@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using HarmonyLib;
 using Sandbox.Common.ObjectBuilders;
 using Sandbox.Game.Gui;
@@ -20,10 +21,24 @@ namespace ToolbarManager.Patches
     [HarmonyPatch(typeof(MyGuiScreenToolbarConfigBase))]
     public static class MyGuiScreenToolbarConfigBasePatch
     {
+        private static Config Cfg => Config.Current;
+        
+        // Keep a set of staging grids, one for each toolbar.
+        // This is not persisted, so they are gone when a game is restarted or a new world is loaded.
+        private static readonly Dictionary<long, MyGuiControlGrid> StagingAreas = new Dictionary<long, MyGuiControlGrid>(16);
+
+        public static void OnSessionLoading()
+        {
+            StagingAreas.Clear();
+        }
+        
         [HarmonyPostfix]
         [HarmonyPatch(nameof(MyGuiScreenToolbarConfigBase.RecreateControls))]
         private static void RecreateControlsPostfix(MyGuiScreenToolbarConfigBase __instance)
         {
+            if (!Cfg.EnableStagingArea)
+                return;
+            
             var toolbarType = MyToolbarComponent.CurrentToolbar?.ToolbarType;
 
             var button = new MyGuiControlButton
@@ -67,6 +82,7 @@ namespace ToolbarManager.Patches
             // Staging label
             var stagingLabel = new MyGuiControlLabel();
             stagingLabel.Text = "Staging";
+            stagingLabel.AddTooltip(Config.StagingAreaDescription);
             stagingLabel.ColorMask = toolbarLabel.ColorMask;
             stagingLabel.TextScale = toolbarLabel.TextScale;
             stagingLabel.OriginAlign = MyGuiDrawAlignEnum.HORISONTAL_LEFT_AND_VERTICAL_TOP;
@@ -74,12 +90,16 @@ namespace ToolbarManager.Patches
             stagingLabel.Size = new Vector2(0.15f, stagingLabelHeight);
             
             // Staging grid and scrollable panel
-            var stagingGrid = new MyGuiControlGrid();
-            stagingGrid.VisualStyle = MyGuiControlGridStyleEnum.Toolbar;
-            stagingGrid.ColorMask = Vector4.One;
-            stagingGrid.ItemBackgroundColorMask = __instance.m_gridBlocks.ColorMask;
-            stagingGrid.ColumnsCount = 10;
-            stagingGrid.RowsCount = 10;
+            var entityId = __instance.m_shipController?.EntityId ?? __instance.m_character.EntityId;
+            var stagingGrid = StagingAreas.TryGetValue(entityId, out var existingArea) ? existingArea : StagingAreas[entityId] = new MyGuiControlGrid();
+            if (stagingGrid.VisualStyle != MyGuiControlGridStyleEnum.Toolbar)
+            {
+                stagingGrid.VisualStyle = MyGuiControlGridStyleEnum.Toolbar;
+                stagingGrid.ColorMask = Vector4.One;
+                stagingGrid.ItemBackgroundColorMask = __instance.m_gridBlocks.ColorMask;
+                stagingGrid.ColumnsCount = 10;
+                stagingGrid.RowsCount = 10;
+            }
             
             var stagingPanel = new MyGuiControlScrollablePanel(stagingGrid);
             stagingPanel.BackgroundTexture = MyGuiControlGrid.GetVisualStyle(MyGuiControlGridStyleEnum.ToolsBlocks).BackgroundTexture;
@@ -115,6 +135,9 @@ namespace ToolbarManager.Patches
         [HarmonyPatch(nameof(MyGuiScreenToolbarConfigBase.dragAndDrop_OnDrop))]
         private static bool DragAndDropOnDropPrefix(MyGuiScreenToolbarConfigBase __instance, object sender, MyDragAndDropEventArgs eventArgs)
         {
+            if (!Cfg.EnableStagingArea)
+                return true;
+            
             // Handle the case of dropping configured block toolbar items from the staging area into the toolbar (no context menu is required)
             // Most of this code is a verbatim copy from MyGuiScreenToolbarConfigBase.dragAndDrop_OnDrop to avoid having to use a very complex a transpiler patch.
             // Only change is that it handles only the case when an action has already been defined for the terminal block: tb._Action != null

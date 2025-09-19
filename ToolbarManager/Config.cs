@@ -21,6 +21,7 @@ namespace ToolbarManager
         
         #region Options
         
+        private bool enableStagingArea = true;
         private bool useCharacterProfilesForBuildCockpit = true;
         
         private bool keepBlockSearchText;
@@ -37,7 +38,17 @@ namespace ToolbarManager
         
         public readonly string Title = "Toolbar Manager";
 
-        [Separator("Functionality")]
+        public const string StagingAreaDescription = "The staging area allows for the convenient reordering of toolbar items,\nincluding moving them between toolbar pages.\n\nThe staging areas are preserved for the character\nand each block with a toolbar in-memory during gameplay,\nbut NOT SAVED over sessions (world loads) and game restarts.";
+
+        [Separator("Functionality")] 
+        
+        [Checkbox(label: "Enable staging area", description: StagingAreaDescription)]
+        public bool EnableStagingArea
+        {
+            get => enableStagingArea;
+            set => SetField(ref enableStagingArea, value);
+        }
+        
         [Checkbox(label: "Build cockpit is character", description: "Building from cockpit (Ctrl-G) uses the character profiles")]
         public bool UseCharacterProfilesForBuildCockpit
         {
@@ -46,6 +57,7 @@ namespace ToolbarManager
         }
 
         [Separator("Recent searches")]
+        
         [Checkbox(description: "Keep the search text between subsequent uses of the block search")]
         public bool KeepBlockSearchText
         {
@@ -75,6 +87,7 @@ namespace ToolbarManager
         }
 
         [Separator("Hotkeys")]
+        
         [Keybind(description: "Key to open the G menu and activate block search")]
         public Binding BlockSearchKey
         {

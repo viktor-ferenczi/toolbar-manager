@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
 using HarmonyLib;
+using Sandbox.Game.World;
 using Sandbox.Graphics.GUI;
+using ToolbarManager.Patches;
 using ToolbarManager.Settings;
 using ToolbarManager.Settings.Layouts;
 using VRage.Plugins;
@@ -23,6 +25,8 @@ namespace ToolbarManager
             
             var harmony = new Harmony("ToolbarManager");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
+
+            MySession.OnLoading += OnSessionLoading;
         }
 
         public void Update()
@@ -31,7 +35,13 @@ namespace ToolbarManager
 
         public void Dispose()
         {
+            MySession.OnLoading -= OnSessionLoading;
             Instance = null;
+        }
+
+        private void OnSessionLoading()
+        {
+            MyGuiScreenToolbarConfigBasePatch.OnSessionLoading();
         }
 
         // ReSharper disable once UnusedMember.Global
