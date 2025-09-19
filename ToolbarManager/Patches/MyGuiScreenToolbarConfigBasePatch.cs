@@ -34,6 +34,9 @@ namespace ToolbarManager.Patches
             button.Enabled = toolbarType != null && toolbarType != MyToolbarType.None;
 
             __instance.Elements.Add(button);
+            
+            // Allow for drag&drop reordering of toolbar items on the currently selected toolbar page
+            __instance.m_toolbarControl.m_toolbarItemsGrid.ItemDragged += __instance.grid_OnDrag;
         }
 
         private static void OpenProfilesScreen(MyGuiControlButton obj)
