@@ -147,7 +147,8 @@ namespace ToolbarManager.Patches
                 var data = userData.ItemData();
                 if (data is MyObjectBuilder_ToolbarItemEmpty || data == null)
                     return false;
-                if (data is MyObjectBuilder_ToolbarItemTerminalBlock tb && tb._Action != null)
+                if ((data is MyObjectBuilder_ToolbarItemTerminalBlock tb && tb._Action != null) ||
+                    (data is MyObjectBuilder_ToolbarItemTerminalGroup tg && tg._Action != null))
                 {
                     var toolbarItem = MyToolbarItemFactory.CreateToolbarItem(data);
                     if (toolbarItem is MyToolbarItemActions)
