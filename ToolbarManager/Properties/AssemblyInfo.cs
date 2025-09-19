@@ -37,3 +37,4 @@ using System.Runtime.InteropServices;
 
 // Game assemblies to publicize
 [assembly: IgnoresAccessChecksTo("Sandbox.Game")]
+[assembly: IgnoresAccessChecksTo("Sandbox.Graphics")]

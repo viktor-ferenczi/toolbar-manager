@@ -134,6 +134,7 @@
         <Compile Include="Logic\Toolbar.cs"/>
         <Compile Include="Logic\ProfileStorage.cs"/>
         <Compile Include="Logic\Slot.cs"/>
+        <Compile Include="Patches\MyGuiControlToolbarPatch.cs" />
         <Compile Include="Patches\MyGuiScreenGamePlayPatch.cs"/>
         <Compile Include="Patches\MyGuiScreenToolbarConfigBasePatch.cs"/>
         <Compile Include="Plugin.cs"/>
@@ -193,5 +194,6 @@
     </PropertyGroup>
     <ItemGroup>
         <Publicize Include="Sandbox.Game" IncludeCompilerGeneratedMembers="false" IncludeVirtualMembers="false" />
+        <Publicize Include="Sandbox.Graphics" IncludeCompilerGeneratedMembers="false" IncludeVirtualMembers="false" />
     </ItemGroup>
 </Project>
