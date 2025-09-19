@@ -90,7 +90,7 @@ namespace ToolbarManager.Patches
             stagingLabel.Size = new Vector2(0.15f, stagingLabelHeight);
             
             // Staging grid and scrollable panel
-            var entityId = __instance.m_shipController?.EntityId ?? __instance.m_character.EntityId;
+            var entityId = __instance.m_toolbarControl?.m_shownToolbar?.Owner?.EntityId ?? __instance.m_character?.EntityId ?? 0;
             var stagingGrid = StagingAreas.TryGetValue(entityId, out var existingArea) ? existingArea : StagingAreas[entityId] = new MyGuiControlGrid();
             if (stagingGrid.VisualStyle != MyGuiControlGridStyleEnum.Toolbar)
             {
@@ -188,6 +188,9 @@ namespace ToolbarManager.Patches
 
         private static void OnStagingGridOnDrop(MyGuiControlGrid stagingGrid, object sender, MyDragAndDropEventArgs eventArgs)
         {
+            if (eventArgs.DropTo == null)
+                return;
+            
             if (eventArgs.DropTo.Grid != stagingGrid) 
                 return;
             
@@ -207,7 +210,19 @@ namespace ToolbarManager.Patches
                 throw new Exception($"Unknown iter.UserData: {item.UserData.GetType().FullName}");
             }
 
-            var clone = new MyGuiGridItem(item.Icons, item.SubIcon, item.ToolTip, userData);
+            // Clone only if the item was copied from another grid, do not clone on moving
+            var clone = eventArgs.DragFrom.Grid == stagingGrid ? item : new MyGuiGridItem(item.Icons, item.SubIcon, item.ToolTip, userData);
+            
+            // Remove any existing item, so identical ones are "moved" and not copied all the time (reduces clutter)
+            for (var i = 0; i < stagingGrid.m_items.Count; i++)
+            {
+                if (stagingGrid.m_items[i] == clone)
+                {
+                    stagingGrid.SetItemAt(i, null);
+                    break;
+                }
+            }
+            
             stagingGrid.SetItemAt(eventArgs.DropTo.ItemIndex, clone);
         }
 
