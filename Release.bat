@@ -7,14 +7,14 @@ SET p7z="C:\Program Files\7-Zip\7z.exe"
 
 mkdir %version%
 
-SET harmony=Bin64\0Harmony.dll
+REM SET harmony=ToolbarManager\bin\Release\0Harmony.dll
 
-SET client_bin=Bin64\Plugins\Local\%name%.dll
+SET client_bin=ToolbarManager\bin\Release\%name%.dll
 SET client_pkg=%name%-%version%
 
 mkdir "%client_pkg%"
 
-copy /y "%harmony%" "%client_pkg%\"
+REM copy /y "%harmony%" "%client_pkg%\"
 copy /y "%client_bin%" "%client_pkg%\"
 
 SET zip_name=%name%-%version%.zip
