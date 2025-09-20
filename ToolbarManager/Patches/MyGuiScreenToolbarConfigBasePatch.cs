@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using HarmonyLib;
+using Sandbox;
 using Sandbox.Common.ObjectBuilders;
 using Sandbox.Game.Gui;
 using Sandbox.Game.GUI;
@@ -270,6 +271,38 @@ namespace ToolbarManager.Patches
         {
             if (Config.Current.KeepProfileSearchText)
                 Config.Save();
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(MyGuiScreenToolbarConfigBase.AddGridItemToToolbar))]
+        private static bool AddGridItemToToolbarPrefix()
+        {
+            if (!Cfg.PreventOverwritingSlots)
+                return true;
+
+            // SE overwrites the first block of ship toolbars or the selected block of character toolbars on
+            // double-clicking grid blocks. We disable this here and require the player to explicitly drag&drop
+            // blocks to overwrite existing, non-empty toolbar slots. It is way less error prone.
+
+            // The culprit is this code line:
+            // int slot1 = currentToolbar.SelectedSlot ?? 0;
+
+            // Prefix condition to disallow this case (avoid having to use a transpiler):
+            var currentToolbar = MyToolbarComponent.CurrentToolbar;
+            var slotCount = currentToolbar.SlotCount;
+            for (var slot = 0; slot < slotCount; ++slot)
+            {
+                if (currentToolbar.GetSlotItem(slot) == null)
+                {
+                    // There is at least one free slot, which will be chosen as target by the original implementation
+                    return true;
+                }
+            }
+
+            // There is no free toolbar slot on the currently selected page.
+            // Disallow overwriting the selected or first slot.
+            MyGuiAudio.PlaySound(MyGuiSounds.HudUnable);
+            return false;
         }
     }
 }
