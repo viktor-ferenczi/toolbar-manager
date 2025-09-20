@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using HarmonyLib;
-using Sandbox;
 using Sandbox.Common.ObjectBuilders;
 using Sandbox.Game.Gui;
 using Sandbox.Game.GUI;
@@ -11,6 +12,7 @@ using ToolbarManager.Gui;
 using VRage.Audio;
 using VRage.Game;
 using VRage.Input;
+using VRage.ObjectBuilders.Private;
 using VRage.Utils;
 using VRageMath;
 
@@ -123,15 +125,15 @@ namespace ToolbarManager.Patches
             __instance.Controls.m_controls.Insert(index, stagingPanel);
             __instance.Controls.m_controls.Insert(index, stagingLabel);
             
-            __instance.m_dragAndDrop.ItemDropped += (sender, eventArgs) => OnStagingGridOnDrop(stagingGrid, sender, eventArgs);
+            __instance.m_dragAndDrop.ItemDropped += (sender, eventArgs) => OnStagingGridOnDrop(stagingGrid, eventArgs);
             
-            stagingGrid.ItemClicked += (sender, eventArgs) => OnStagingGridItemClicked(__instance, sender, eventArgs);
+            stagingGrid.ItemClicked += OnStagingGridItemClicked;
             stagingGrid.ItemDragged += (sender, eventArgs) => OnStagingGridOnDrag(__instance, sender, eventArgs);
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(MyGuiScreenToolbarConfigBase.dragAndDrop_OnDrop))]
-        private static bool DragAndDropOnDropPrefix(MyGuiScreenToolbarConfigBase __instance, object sender, MyDragAndDropEventArgs eventArgs)
+        private static bool DragAndDropOnDropPrefix(MyGuiScreenToolbarConfigBase __instance, MyDragAndDropEventArgs eventArgs)
         {
             if (!Cfg.EnableStagingArea)
                 return true;
@@ -177,7 +179,7 @@ namespace ToolbarManager.Patches
             var currentToolbar = MyToolbarComponent.CurrentToolbar;
             for (var slot1 = 0; slot1 < currentToolbar.SlotCount; ++slot1)
             {
-                if (currentToolbar.GetSlotItem(slot1) != null && currentToolbar.GetSlotItem(slot1).Equals((object)item))
+                if (currentToolbar.GetSlotItem(slot1) != null && currentToolbar.GetSlotItem(slot1).Equals(item))
                     currentToolbar.SetItemAtSlot(slot1, null);
             }
 
@@ -185,7 +187,7 @@ namespace ToolbarManager.Patches
             MyToolbarComponent.CurrentToolbar.SetItemAtSlot(slot, item);
         }
 
-        private static void OnStagingGridOnDrop(MyGuiControlGrid stagingGrid, object sender, MyDragAndDropEventArgs eventArgs)
+        private static void OnStagingGridOnDrop(MyGuiControlGrid stagingGrid, MyDragAndDropEventArgs eventArgs)
         {
             if (eventArgs.DropTo == null)
                 return;
@@ -194,38 +196,84 @@ namespace ToolbarManager.Patches
                 return;
             
             var item = eventArgs.Item;
+            
+            // The user data needs to be converted to avoid crash on moving items from the staging area to the toolbar
             MyGuiScreenToolbarConfigBase.GridItemUserData userData;
-            if (item.UserData is MyGuiScreenToolbarConfigBase.GridItemUserData gridItemUserData)
+            switch (item.UserData)
             {
-                userData = gridItemUserData;
+                case MyGuiScreenToolbarConfigBase.GridItemUserData gridItemUserData:
+                    userData = gridItemUserData;
+                    break;
+                
+                case MyToolbarItem toolbarItem:
+                    userData = new MyGuiScreenToolbarConfigBase.GridItemUserData();
+                    userData.ItemData = () => toolbarItem.GetObjectBuilder();
+                    break;
+                
+                default:
+                    throw new Exception($"Unknown iter.UserData: {item.UserData.GetType().FullName}");
             }
-            else if (item.UserData is MyToolbarItem toolbarItem)
+
+            // Moved inside the staging area?
+            if (eventArgs.DragFrom.Grid == stagingGrid)
             {
-                userData = new MyGuiScreenToolbarConfigBase.GridItemUserData();
-                userData.ItemData = () => toolbarItem.GetObjectBuilder();
+                // Swap the target item (null if empty) with the dragged one
+                // (There is no need to clone the item, it is already a staging one.)
+                var previous = stagingGrid.GetItemAt(eventArgs.DropTo.ItemIndex);
+                stagingGrid.SetItemAt(eventArgs.DropTo.ItemIndex, item);
+                stagingGrid.SetItemAt(eventArgs.DragFrom.ItemIndex, previous);
             }
             else
             {
-                throw new Exception($"Unknown iter.UserData: {item.UserData.GetType().FullName}");
-            }
-
-            // Clone only if the item was copied from another grid, do not clone on moving
-            var clone = eventArgs.DragFrom.Grid == stagingGrid ? item : new MyGuiGridItem(item.Icons, item.SubIcon, item.ToolTip, userData);
+                // Clone the item to remove the toolbar number and current state, which is not relevant in the staging area
+                var clone = new MyGuiGridItem(item.Icons, item.SubIcon, item.ToolTip, userData);
             
-            // Remove any existing item, so identical ones are "moved" and not copied all the time (reduces clutter)
-            for (var i = 0; i < stagingGrid.m_items.Count; i++)
-            {
-                if (stagingGrid.m_items[i] == clone)
+                // Remove any existing item, so identical ones are "moved" and not copied all the time (reduces clutter)
+                for (var i = 0; i < stagingGrid.m_items.Count; i++)
                 {
-                    stagingGrid.SetItemAt(i, null);
-                    break;
+                    if (clone.IsSameBlock(stagingGrid.m_items[i]))
+                    {
+                        stagingGrid.SetItemAt(i, null);
+                        break;
+                    }
                 }
+                
+                // Place the item in the staging area, overwrite the cell if it has been occupied
+                stagingGrid.SetItemAt(eventArgs.DropTo.ItemIndex, clone);
             }
-            
-            stagingGrid.SetItemAt(eventArgs.DropTo.ItemIndex, clone);
         }
 
-        private static void OnStagingGridItemClicked(MyGuiScreenToolbarConfigBase myGuiScreenToolbarConfigBase, MyGuiControlGrid stagingGrid, MyGuiControlGrid.EventArgs eventArgs)
+        private static bool IsSameBlock(this MyGuiGridItem item, MyGuiGridItem other)
+        {
+            if (item == null || other == null)
+            {
+                return false;
+            }
+            
+            if (item == other) 
+                return true;
+
+            if (item.UserData is MyGuiScreenToolbarConfigBase.GridItemUserData itemUserData &&
+                other.UserData is MyGuiScreenToolbarConfigBase.GridItemUserData otherUserData)
+            {
+                var id = itemUserData.ItemData();
+                var od = otherUserData.ItemData();
+                if (id == od)
+                    return true;
+
+                // Comparing with XML serialization
+                // (slow, but compares deep and by value regardless of toolbar item builder type)
+                var ims = new MemoryStream();
+                MyObjectBuilderSerializerKeen.Serializer.Serialize(ims, id);
+                var oms = new MemoryStream();
+                MyObjectBuilderSerializerKeen.Serializer.Serialize(oms, od);
+                return ims.ToArray().SequenceEqual(oms.ToArray());
+            }
+
+            return false;
+        }
+
+        private static void OnStagingGridItemClicked(MyGuiControlGrid stagingGrid, MyGuiControlGrid.EventArgs eventArgs)
         {
             if (eventArgs.Button == MySharedButtonsEnum.Secondary)
             {
