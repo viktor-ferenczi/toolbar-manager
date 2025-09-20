@@ -1,31 +1,54 @@
 # Toolbar Manager
 
-Toolbar Manager for the Space Engineers game.
-
-For support please [join the SE Mods Discord](https://discord.gg/PYPFPGf3Ca).
+Toolbar Manager plugin for [Space Engineers 1](https://www.spaceengineersgame.com/).
 
 Please consider supporting my work on [Patreon](https://www.patreon.com/semods) or one time via [PayPal](https://www.paypal.com/paypalme/vferenczi/).
 
-*Thank you and enjoy!*
+- [SE Mods Discord](https://discord.gg/PYPFPGf3Ca) FAQ, Troubleshooting, Support, Bug Reports, Discussion
+- [Pulsar Discord](https://discord.gg/z8ZczP2YZY) Everything about plugins
+- [YouTube Channel](https://www.youtube.com/@couldntfindafreename)
+- [Source code](https://github.com/viktor-ferenczi/se-toolbar-manager)
+- [Bug reports](https://discord.gg/KWzDu683zs)
+
+## Installation
+
+1. Exit from Space Engineers
+2. Install [Pulsar](https://github.com/SpaceGT/Pulsar)
+3. Start Space Engineers
+4. Open the **Plugins** menu (it should show up in the Main Menu)
+5. Add the **Toolbar Manager** plugin to your list (`+` icon)
+6. Apply the change and let the game restart
+
+After enabling the plugin it will be active for all single- and multiplayer worlds.
+
+*Enjoy!*
 
 ## Features
 
-This plugin allows for saving, loading and managing character and block
-toolbars. For example, you can quickly load a "standard" toolbar for
-your character into any game (including multiplayer ones), which can
-greatly speed up your builds by using toolbar slots you have already
-memorized. It can also be used to fix the broken toolbars of your
-ships in survival based on the profiles you saved in your creative
-design world earlier.
+This plugin allows for the saving, loading and convenient editing of character and block
+toolbars. For example, you can quickly load a "standard" toolbar for your character into 
+any game (including multiplayer ones), which can greatly speed up your builds by using 
+toolbar slots you have already memorized. It can also be used to fix the broken toolbars of
+your ships in survival based on the profiles you saved in your creative design world earlier.
 
 This plugin works for both offline and online multiplayer games without
 the need for any server side support. Toolbar profiles are saved locally,
 nothing is stored on any server.
 
-### Toolbars
+### Editing toolbars
 
-The **G menu** has a new TM buttons at the bottom left to manage saved
-toolbar profiles.
+This plugin adds a new "Staging" area in the G menu, which allows for the convenient reordering
+of toolbar items, including moving them between toolbar pages.
+
+The staging areas are preserved for the character and each block with a toolbar in-memory during
+gameplay, but **not saved** over sessions (world loads) and game restarts. Please save your
+toolbars into profiles after editing.
+
+You can disable the staging area in the plugin's configuration, should it cause any issues.
+
+### Saving/loading toolbars (profiles)
+
+The **G menu** has a new TM buttons at the bottom left to manage saved toolbar profiles.
 
 **New** saves the currently open toolbar as a new profile.
 
@@ -35,7 +58,7 @@ toolbar profiles.
 
 You can also **Rename** and **Delete** toolbar profiles.
 
-### Profile folders
+#### Profile folders (for backup)
 
 Saved toolbars are stored as XML files in folders under:
 `%AppData%\Roaming\SpaceEngineers\ToolbarManager`
@@ -47,17 +70,6 @@ possible to save the toolbar from any Cockpit and load the profile into a Remote
 Up to 6 backups of each profile is kept, even after deleting the profile. Renaming profiles
 also renames the backup files. Orphaned backup files (with the main profile deleted) are
 cleaned up after 90 days, but only when a profile is deleted the next time.
-
-### Toolbar editing
-
-This plugin adds a new "Staging" area in the G menu, which allows for the convenient reordering
-of toolbar items, including moving them between toolbar pages.
-
-The staging areas are preserved for the character and each block with a toolbar in-memory during
-gameplay, but **not saved** over sessions (world loads) and game restarts. Please save your
-toolbars into profiles after editing.
-
-You can disable the staging area in the plugin's configuration, should it cause any issues.
 
 ### Quick block selection
 
@@ -85,37 +97,17 @@ Separating multiple search patterns by space is not supported, currently.
 
 You can change the hotkey in the plugin's configuration.
 
-### Planned features
+### Configuration
 
-- Multiplying the available toolbar pages using new hotkeys and saved toolbars
-- Restricting the load/merge operations to certain toolbar pages
-- Moving and swapping toolbar items using mouse drag&drop
-- Moving toolbar items between toolbar pages
-- Swapping toolbar pages
+All key features of this plugin are configurable. You can change any of the configuration options without having to restart or reload anything. Please see below how to access the plugin's configuration dialog.
 
-Please join the Discord (see below) and tell me which one you would use,
-so they can be fast-tracked.
+#### From the main menu
 
-## Installation
+Double-click on the **Toolbar Manager** plugin in Pulsar's **Plugins** dialog, which will open the plugin's detailed information dialog. Use the **Settings** button in that dialog.
 
-1. Exit from Space Engineers
-2. Install the [Plugin Loader](https://github.com/sepluginloader/SpaceEngineersLauncher)
-3. Start Space Engineers
-4. Open the Plugins menu (should be in the Main Menu)
-5. Enable the Toolbar Manager plugin
-6. Save and let the game restart
+#### During game play
 
-After enabling the plugin it will be active for all single- and multiplayer worlds.
-
-*Enjoy!*
-
-## Want to know more?
-
-- [SE Mods Discord](https://discord.gg/PYPFPGf3Ca) FAQ, Troubleshooting, Support, Bug Reports, Discussion
-- [Plugin Loader Discord](https://discord.gg/6ETGRU3CzR) Everything about plugins
-- [YouTube Channel](https://www.youtube.com/channel/UCc5ar3cW9qoOgdBb1FM_rxQ)
-- [Source code](https://github.com/viktor-ferenczi/toolbar-manager)
-- [Bug reports](https://discord.gg/x3Z8Ug5YkQ)
+If you are in a menu (Terminal, etc.), then close that. Press `Ctrl-Alt-/` to open the **Configure a plugin** dialog. Choose the **Toolbar Manager** plugin.
 
 ## Credits
 
