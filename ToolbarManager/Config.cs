@@ -22,6 +22,7 @@ namespace ToolbarManager
         #region Options
         
         private bool enableStagingArea = true;
+        private int stagingAreaRowCount = 2;
         private bool preventOverwritingSlots = true;
         private bool useCharacterProfilesForBuildCockpit = true;
         
@@ -48,6 +49,13 @@ namespace ToolbarManager
         {
             get => enableStagingArea;
             set => SetField(ref enableStagingArea, value);
+        }
+        
+        [Slider(1f, 8f, 1f, SliderAttribute.SliderType.Integer, label: "Staging rows", description: "Number of rows visible in the staging area [1..8]")]
+        public int StagingAreaRowCount
+        {
+            get => stagingAreaRowCount;
+            set => SetField(ref stagingAreaRowCount, value);
         }
         
         [Checkbox(label: "Prevent overwriting slots", description: "Prevent overwriting the selected or first toolbar slot on double-clicking blocks")]

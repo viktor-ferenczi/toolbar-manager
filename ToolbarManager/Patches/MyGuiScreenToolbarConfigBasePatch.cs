@@ -73,7 +73,8 @@ namespace ToolbarManager.Patches
             
             // Sizes
             const float spacing = 0.002f;
-            const float stagingHeight = 0.208f;
+            const float cellHeight = 0.07f;
+            var stagingHeight = 0.208f + cellHeight * (Cfg.StagingAreaRowCount - 2f);
             var stagingLabelHeight = toolbarLabel.Size.Y;
             var gridBlocksPanelHeight = availableHeight - spacing - stagingLabelHeight - spacing - stagingHeight + /* WHY??? */ 0.058f;
             
@@ -89,7 +90,7 @@ namespace ToolbarManager.Patches
             stagingLabel.ColorMask = toolbarLabel.ColorMask;
             stagingLabel.TextScale = toolbarLabel.TextScale;
             stagingLabel.OriginAlign = MyGuiDrawAlignEnum.HORISONTAL_LEFT_AND_VERTICAL_TOP;
-            stagingLabel.Position = topLeft + new Vector2(0f, gridBlocksPanelHeight + spacing) + /* WHY??? */ new Vector2(0.17f, 0.065f);
+            stagingLabel.Position = topLeft + new Vector2(0f, gridBlocksPanelHeight + spacing) + /* WHY??? */ new Vector2(0.17f, 0.063f);
             stagingLabel.Size = new Vector2(0.15f, stagingLabelHeight);
             
             // Staging grid and scrollable panel
@@ -113,7 +114,7 @@ namespace ToolbarManager.Patches
             stagingPanel.Position = stagingLabel.Position + new Vector2(0f, stagingLabelHeight + spacing);
             stagingPanel.Size = new Vector2(panelWidth, stagingHeight - 0.05f);
             
-            toolbarLabel.Position += new Vector2(0f, 0.018f);
+            toolbarLabel.Position += new Vector2(0f, 0.004f);
             
             __instance.AddControl(stagingLabel);
             __instance.AddControl(stagingPanel);
