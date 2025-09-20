@@ -137,7 +137,7 @@ _in alphabetical order_
 - NeVaR
 - opesoorry
 
-#### Testers
+### Testers
 
 - Avaness
 - mkaito
