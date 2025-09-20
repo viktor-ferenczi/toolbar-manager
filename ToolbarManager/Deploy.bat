@@ -5,9 +5,7 @@ echo Parameters: %*
 
 set SRC=%~p1
 set NAME=%~2
-
-set TARGET=..\..\..\Bin64\Pulsar\Legacy\Local
-mkdir %TARGET% >NUL 2>&1
+set TARGET=%AppData%\Pulsar\Legacy\Local
 
 echo.
 echo Deploying CLIENT plugin binary:

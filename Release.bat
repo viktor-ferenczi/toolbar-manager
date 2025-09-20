@@ -23,6 +23,9 @@ SET zip_name=%name%-%version%.zip
 
 rd /s /q "%client_pkg%"
 
+REM Why the folder cannot be deleted from here?!
+rmdir "%client_pkg%"
+
 echo %zip_name%
 echo Done
 

@@ -160,7 +160,7 @@
         <Compile Include="Settings\Tools\Tools.cs" />
     </ItemGroup>
     <ItemGroup>
-        <Content Include="deploy.bat"/>
+        <Content Include="Deploy.bat" />
         <Content Include="..\README.md">
             <Link>README.md</Link>
         </Content>
@@ -177,7 +177,7 @@
     </Target>
     -->
     <PropertyGroup>
-        <PostBuildEvent>call "$(ProjectDir)\deploy.bat" "$(TargetPath)" "$(SolutionName)"</PostBuildEvent>
+        <PostBuildEvent>call "$(ProjectDir)\Deploy.bat" "$(TargetPath)" "$(SolutionName)"</PostBuildEvent>
     </PropertyGroup>
     <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
         <PropertyGroup>
