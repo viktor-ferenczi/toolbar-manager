@@ -22,6 +22,7 @@ namespace ToolbarManager
         #region Options
         
         private bool enableStagingArea = true;
+        private bool preventOverwritingSlots = true;
         private bool useCharacterProfilesForBuildCockpit = true;
         
         private bool keepBlockSearchText;
@@ -49,6 +50,13 @@ namespace ToolbarManager
             set => SetField(ref enableStagingArea, value);
         }
         
+        [Checkbox(label: "Prevent overwriting slots", description: "Prevent overwriting the selected or first toolbar slot on double-clicking blocks")]
+        public bool PreventOverwritingSlots
+        {
+            get => preventOverwritingSlots;
+            set => SetField(ref preventOverwritingSlots, value);
+        }
+
         [Checkbox(label: "Build cockpit is character", description: "Building from cockpit (Ctrl-G) uses the character profiles")]
         public bool UseCharacterProfilesForBuildCockpit
         {
